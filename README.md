@@ -27,7 +27,10 @@
 
 #### Demo
  * URL: http://myops.imdst.com
-  
+
+#### 其他说明
+* 由于部分业务功能代码较敏感，已经删减
+
 #### 2.0 版本功能介绍
-* URL https://blog.imdst.com/kai-yuan-yun-wei-zi-dong-hua-ping-tai-kai-fa-she-ji-si-lu/
+* [URL](https://blog.imdst.com/kai-yuan-yun-wei-zi-dong-hua-ping-tai-kai-fa-she-ji-si-lu/)
  
