@@ -29,7 +29,7 @@
  * URL: http://myops.imdst.com
 
 #### 其他说明
-* 由于部分业务功能代码较敏感，已经删减
+* 由于部分业务功能代码较敏感，已经删减，由于使用框架和模块版本较低，适合学习研究使用，不建议直接上生产环境
 
 #### 2.0 版本功能介绍
 * [URL](https://blog.imdst.com/kai-yuan-yun-wei-zi-dong-hua-ping-tai-kai-fa-she-ji-si-lu/)
