@@ -14,9 +14,11 @@
 * 系统管理
 
 #### 部署说明
+* Django 1.8.x 
 * python 2.7.x
 * redis 3.0+
 * MySQL 5.6
+* celery 3.1.x
 * requirements.txt (模块安装)
 
 #### 启动说明
