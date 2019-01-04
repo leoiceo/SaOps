@@ -1,5 +1,5 @@
 # devops
-####游戏运维自动化平台
+# <<游戏运维自动化平台>>
 
 #### 基本功能介绍
 
@@ -13,13 +13,13 @@
 * 内容管理
 * 系统管理
 
-####部署说明
+#### 部署说明
 * python 2.7.x
 * redis 3.0+
 * MySQL 5.6
 * requirements.txt (模块安装)
 
-####启动说明
+#### 启动说明
 * python manage.py runserver 0.0.0.0:8080
 * 生产环境使用 uwsgi + nginx 
 
