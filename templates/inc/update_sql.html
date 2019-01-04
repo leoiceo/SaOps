@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block page-content %}
+{% include 'nav_cat_bar.html' %}
+
+<div class="wrapper wrapper-content animated fadeIn tooltip-demo">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title ">
+                    <button type="button" class="btn btn-primary btn-write btn-xs" data-toggle="tooltip" data-placement="right" title="数据库更新">数据库更新 上传更新文件</button>
+                <div class="ibox-tools">
+                <a class="collapse-link">
+                    <i class="fa fa-chevron-up"></i>
+                </a>
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                    <i class="fa fa-wrench"></i>
+                </a>
+                <ul class="dropdown-menu dropdown-user">
+                    <li><a href="#">Config option 1</a>
+                    </li>
+                    <li><a href="#">Config option 2</a>
+                    </li>
+                </ul>
+                <a class="close-link">
+                    <i class="fa fa-times"></i>
+                </a>
+                </div>
+            </div>
+            <div class="ibox-content">
+                {% if db_log %}
+                    <div class="alert alert-success text-center">{{ db_log }}</div>
+                {% endif %}
+                <div class="row">
+                    <div class=" m-b-xs pull-right">
+                        {% for k,v in inc_area_plat_info.items %}
+                            <div class="btn-group">
+                              <button data-toggle="dropdown" class="btn btn-primary dropdown-toggle">{{k}} <span class="caret"></span></button>
+                                <ul class="dropdown-menu">
+                                    {% for plat_name in v %}
+                                        <li class="divider"></li>
+                                        <li>
+                                            <a href="?area={{k}}&platform={{plat_name}}">{{plat_name}}</a>
+                                        </li>
+                                    {% endfor %}
+                              </ul>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="">
+                    <form id="my-awesome-dropzone" class="dropzone" action="#">
+                        <button type="submit" class="btn btn-danger pull-right" data-toggle="tooltip" data-placement="left" title="*_*确认上传文件*_*">上传文件</button>
+                        <div></div>
+                    </form>
+                </div>
+                <div align="right">
+                    <div class="m text-right"><big><font color="red">当前选择： 地区={{zone}}、平台={{platform}}</font></big> </div>
+                    <div class="hr-line-dashed"></div>
+                    <a type="submit" class="btn btn-primary"  href="/inc/update_sql_info/?platform={{platform}}&area={{area_name}}" >选择服务器</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function(){
+        Dropzone.options.myAwesomeDropzone = {
+            autoProcessQueue: false,
+            uploadMultiple: true,
+            parallelUploads: 100,
+            maxFiles: 100,
+            url: '/inc/update_sql/?platform={{platform}}&area={{area_name}}',
+
+            // Dropzone settings
+            init: function() {
+                var myDropzone = this;
+
+                this.element.querySelector("button[type=submit]").addEventListener("click", function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    myDropzone.processQueue();
+                });
+                this.on("sendingmultiple", function() {
+                });
+                this.on("successmultiple", function(files, response) {
+                    alert("上传完毕!")
+                });
+                this.on("errormultiple", function(files, response) {
+                });
+                this.on("addedfile", function(file) {
+                        // Create the remove button
+                        var removeButton = Dropzone.createElement("<button class='btn btn-sm btn-block'>Remove file</button>");
+                        
+                        // Capture the Dropzone instance as closure.
+                        var _this = this;
+
+                        // Listen to the click event
+                        removeButton.addEventListener("click", function(e) {
+                          // Make sure the button click doesn't submit the form:
+                          e.preventDefault();
+                          e.stopPropagation();
+
+                          // Remove the file preview.
+                          _this.removeFile(file);
+                          // If you want to the delete the file on the server as well,
+                          // you can do the AJAX request here.
+                        });
+
+                        // Add the button to the file preview element.
+                        file.previewElement.appendChild(removeButton);
+                    });
+            }
+        }
+   });
+
+</script>
+{%endblock%}

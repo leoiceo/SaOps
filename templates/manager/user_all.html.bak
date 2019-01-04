@@ -1,0 +1,198 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block page-content %}
+{% include 'nav_cat_bar.html' %}
+
+<div class="row">
+                <div class="col-lg-12">
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-title">
+                            <h5>{{tip}} </h5>
+                            <div class="ibox-tools">
+                                <a class="collapse-link">
+                                    <i class="fa fa-chevron-up"></i>
+                                </a>
+                                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                    <i class="fa fa-wrench"></i>
+                                </a>
+                                <ul class="dropdown-menu dropdown-user">
+                                    <li><a href="#">Config option 1</a>
+                                    </li>
+                                    <li><a href="#">Config option 2</a>
+                                    </li>
+                                </ul>
+                                <a class="close-link">
+                                    <i class="fa fa-times"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="ibox-content">
+                            <div class="row">
+                              <div class="col-sm-4 m-b-xs">
+                                  <a class="btn btn-primary btn-write" href="{% url 'user_add' %}"> 添加用户</a>
+                              </div>
+                            </div>
+                            <div class="table-responsive">
+                              <form id="users_form" name="users_form">
+                                <table class="table table-striped table-bordered table-hover">
+                                    <thead>
+                                    <tr>
+                                     <!-- <th class="text-center">
+                                         <input id="checkall" type="checkbox" class="i-checks" name="checkall" value="checkall" data-editable='false' onclick="check_all('users_form')"></th>-->
+                                        <th class="text-center">姓名</th>
+                                        <th class="text-center">邮箱</th>
+                                        <th class="text-center">电话</th>
+                                        <th class="text-center">所属部门</th>
+                                        <th class="text-center">所属项目</th>
+                                        <th class="text-center">用户角色</th>
+                                        <th class="text-center">状态</th>
+                                        <th class="text-center">创建时间</th>
+                                        <th class="text-center">上次登录时间</th>
+                                        <th class="text-center">操作</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for user in users %}
+                                          <tr class="text-center">
+                                             <!-- <td name="id" data-editable='false'>
+                                                  <input name="account" value="{{ user.id }}" type="checkbox" class="i-checks">
+                                              </td> -->
+                                            <td>{{ user.name }}</td>
+                                            <td>{{ user.email}}</td>
+                                            <td>{{user.mobile}}</td>
+                                            <td>{{ user.department }}</td>
+                                            <td>
+                                              {% for kk in user.project.all %}
+                                                  {{kk}},
+                                              {% endfor %}
+                                            <td data-toggle="modal" data-target="#modity-privil">
+                                                {% ifequal user.is_admin 1 %}
+                                                    <abbr style="border-bottom:1px dashed;cursor: pointer;" class="text-info">超级管理员</abbr>
+                                                {% else %}
+                                                    <abbr style="border-bottom:1px dashed;cursor: pointer;" class="text-info">{{user.role}}</abbr>
+                                                {% endifequal %}
+                                            </td>
+                                            {% ifequal user.is_active 1 %}
+                                            <td><font color="green">启用</font></td>   
+                                            {% else %}
+                                            <td><font color="red">禁用</font></td>
+                                            {% endifequal %}
+
+                                            <td>{{user.date_joined|date:"Y-m-d H:i:s"}}</td>
+                                            <td>{{user.last_login|date:"Y-m-d H:i:s"}}</td>
+                                            <td>
+                                                <a href="/manager/user_edit/"><span class="glyphicon glyphicon-pencil"></span></a>
+                                                <a href="/manager/user_list/?user_id={{user.id}}&action=delete"><span class="glyphicon glyphicon-trash" onclick="return confirm('确认删除吗？')"></span></a>
+                                            </td>
+                                            </tr>
+                                        {% endfor %}
+                                          
+                                        
+                                    </tbody>
+                                </table>
+                                    <div class="col-sm-6">
+                                        <div class="dataTables_info" id="editable_info" role="status" aria-live="polite">
+                                            Showing {{ contacts.start_index }} to {{ contacts.end_index }} of {{ p.count }} entries
+                                        </div>
+                                    </div>
+                                    {% include 'paginator.html' %}
+                                </form>
+<!--
+                                <button type="submit" class="btn btn-success"  form="users_form" formmethod="post" formaction="/app01/user_manage/all_user/?action=disable">账号禁用</button>
+                                <button type="submit" class="btn btn-success"  form="users_form" formmethod="post" formaction="/app01/user_manage/all_user/?action=enable">账号激活</button>
+                                <button type="button" class="btn btn-primary"  data-toggle="modal" data-target="#reset-passwd"><i class="icon-stop"></i> 重置密码</button>
+                                <button type="button" class="btn btn-primary"  data-toggle="modal" data-target="#modity-privil"><i class="icon-stop"></i> 修改权限</button>
+                                <button type="submit" class="btn btn-success"  form="users_form" formmethod="post" formaction="/app01/user_manage/project_edit/">授权项目</button>
+                                -->
+                            </div>
+
+                            <div class="modal fade" id="reset-passwd" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+                              <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                  <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                    <h4 class="modal-title" id="exampleModalLabel" align="center">重置密码</h4>
+                                  </div>
+                                  <div class="modal-body">
+                                    <form id="reset-form">
+                                      <div class="form-group">
+                                        <select class="form-control" name="account">
+                                            <option value= >请选择账号</option>
+                                            {% for num in user_all %}
+                                                <option value={{num.username}} >{{num.username}}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <label for="recipient-name" class="control-label">新密码:</label>
+                                        <input type="password" class="form-control" id="recipient-name" name="new_passwd">
+                                        <label for="recipient-name" class="control-label">新密码确认:</label>
+                                        <input type="password" class="form-control" id="recipient-name" name="new_repasswd">
+                                      </div>
+                                    </form>
+                                  </div>
+                                  <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                                    <button type="submit" class="btn btn-primary" form="reset-form" formmethod="post" formaction="/app01/user_manager/reset_passwd/">确定</button>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
+
+
+                            <div class="modal fade" id="modity-privil" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+                              <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                  <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                    <h4 class="modal-title" id="exampleModalLabel" align="center">修改角色</h4>
+                                  </div>
+                                  <div class="modal-body">
+                                    <form id="privil-form">
+                                      <div class="form-group">
+                                        <select class="form-control" name="role_id">
+                                            {% ifequal user.is_admin 1 %}
+                                            {% for role in role_info %}
+                                                <option value={{ role.id }} >{{ role.name}}</option>
+                                            {% endfor %}
+                                            {% else %}
+                                                <option value="">没有权限更改</option>
+                                            {% endifequal %}
+                                        </select>
+                                            <!-- <div class="col-sm-8">
+                                                <div class="radio i-checks">
+                                                    <label><input type="radio" value="1" name="user_level" checked>可执行</label>
+                                                    <label><input type="radio" value="0" name="user_level">只读</label>
+                                                </div>
+                                            </div> -->
+                                      </div>
+                                    </form>
+                                  </div>
+                                  <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                                    <button type="submit" class="btn btn-primary" form="privil-form" formmethod="post" formaction="/manager/user_list/user_modity_privil/?user_id={{user.id}}">确定</button>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('#editable').editableTableWidget({editor: $('<textarea>')});
+       });
+</script>       
+
+
+
+
+
+
+
+
+{% endblock %}

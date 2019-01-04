@@ -1,0 +1,53 @@
+<html><!DOCTYPE html>
+<html>
+<head>
+    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="renderer" content="webkit">
+    <link rel="shortcut icon" href="/static/img/logo.png" type="image/x-icon">
+    <title>DevOps - 登录</title>
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/font-awesome-4.3.0/css/font-awesome.css"  rel="stylesheet">
+    <link href="/static/css/animate.css" rel="stylesheet">
+    <link href="/static/css/style.css" rel="stylesheet">
+</head>
+<body class="gray-bg">
+    <div class="middle-box text-center loginscreen  animated fadeInDown">
+        <div>
+            <div>
+                <h1 class="logo-name">⊙</h1>
+            </div>
+            <h3>欢迎登陆 DevOps</h3>
+            <form class="m-t" action="/login/" role="form" method="post">{% csrf_token %}
+                <div class="form-group">
+                    <input type="email" class="form-control" name="username" value="guest@imdst.com" placeholder="用户名|Email" required="">
+                </div>
+
+                <div class="form-group">
+                    <input type="password" class="form-control" name="password" value="imdst.com" placeholder="密码" required="">
+                </div>
+
+                <div class="form-group ">
+                        <input class="pull-left" style="height:34px;" type="text" name='checkcode' placeholder="验证码"/>
+                        <img onclick='ChangeCode();' id='imgCode' src='/checkcode/' title='点击更新' />
+                </div>
+
+                <button type="submit" class="btn btn-primary block full-width m-b">登 录</button>
+                <span style="color: red;"> {{ login_err }} </span>
+                <p class="text-muted text-center"> <a href="#" ><small>忘记密码了？</small></a> | <a href="#">注册一个新账号</a>
+                </p>
+            </form>
+        </div>
+    </div>
+    <!-- Mainly scripts -->
+     <script type="text/javascript">
+
+            function ChangeCode() {
+            var code = document.getElementById('imgCode');
+            code.src += '?';
+        }
+    </script>
+    <script src="/static/js/jquery.min.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+</body>
+</html>

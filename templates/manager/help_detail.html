@@ -1,0 +1,33 @@
+{% extends 'manager/help_index.html' %}
+
+{% block help-content %}
+    <div class="col-lg-9 animated fadeInRight">
+        <div class="mail-box-header">
+            <div class="pull-right tooltip-demo">
+                <a href="{% url 'help_edit' %}?id={{ article_info.id }}&action=edit"  class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top" title="编辑"><i class="glyphicon glyphicon-pencil"></i> 编辑</a>
+                <a href="{% url 'help_edit' %}?id={{ article_info.id }}&cation=del"  class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top" title="删除"><i class="fa fa-trash-o"></i> 删除</a>
+            </div>
+            <h2>查看文档</h2>
+                <div class="mail-tools tooltip-demo m-t-md">
+                    <h3>
+                    <span class="font-noraml">标题： </span>{{ article_info.name }}
+                    </h3>
+                    <h5>
+                        <span class="pull-right font-noraml">{{ article_info.create_date }}</span>
+                        <span class="font-noraml">撰写人： </span>{{ article_info.create_user }}
+                    </h5>
+                </div>
+        </div>
+            <div class="mail-box">
+
+
+                <div class="mail-body">
+                    {{ article_info.content |safe}}
+                </div>
+
+                <div class="clearfix"></div>
+
+
+            </div>
+                    </div>
+{% endblock %}

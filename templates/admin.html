@@ -1,0 +1,238 @@
+<nav class="navbar-default navbar-static-side" role="navigation">
+
+            <div class="sidebar-collapse">
+
+                <ul class="nav metismenu" id="side-menu">
+
+                    {% include 'nav_li_profile.html' %}
+
+                    <li id="index">
+
+                       <!-- <a href="/"><i class="fa fa-th-large"></i> <span class="nav-label">主面板</span></a> -->
+                       <a href="/"><i class="fa fa-dashboard"></i> <span class="nav-label">主面板</span></a>
+
+                    </li>
+
+                    <li id="hosts">
+
+                        <a href="#" ><i class="fa fa-sitemap"></i> <span class="nav-label">基础资源管理</span><span class="fa arrow"></span></a>
+
+                         <ul class="nav nav-second-level collapse">
+
+                            <li><a href="{% url 'host_list' %}">服务器列表</a></li>
+
+                            <li><a href="{% url 'host_add' %}">添加服务器</a></li>
+
+                            <li><a href="{% url 'publisher' %}">发行商管理</a></li>
+
+                            <li><a href="{% url 'area_list' %}">地区管理</a></li>
+
+                            <li><a href="{% url 'idc_list' %}">IDC管理</a></li>
+
+                            <li><a href="{% url 'plat_list' %}">平台类型管理</a></li>
+
+                            <li><a href="{% url 'use_list' %}">主机用途管理</a></li>
+
+                            <li><a href="{% url 'repos_list' %}">发布仓库管理</a></li>
+
+                            <li><a href="{% url 'cost_list' %}">费用信息管理</a></li>
+
+                            <li><a href="{% url 'report_list' %}">运维报表管理</a></li>
+
+                            <li><a href="{% url 'host_recover' %}">回收资源管理</a></li>
+
+                        </ul>
+                    </li>
+
+                    <li id="perm">
+
+                        <a href="#" ><i class="fa fa-key fa-fw icon"></i> <span class="nav-label">主机权限管理</span><span class="fa arrow"></span></a></a>
+
+                        <ul class="nav nav-second-level collapse">
+                            <li><a href="{% url 'sshkey_list' %}">超级用户</a></li>
+                            <li><a href="{% url 'common_user' %}">普通用户</a></li>
+                            <li><a href="{% url 'init_hosts' %}">初始主机</a></li>
+                            <li><a href="{% url 'init_dbs' %}">初始数据库</a></li>
+                        </ul>
+
+                    </li>
+
+                    <li id="asset">
+                        <a><i class="glyphicon glyphicon-list"></i> <span class="nav-label">资产管理</span><span class="fa arrow"></span></a>
+                        <ul class="nav nav-second-level collapse">
+                            <li><a href="{% url 'asset_status' %}">采集资产</a></li>
+                            <li><a href="{% url 'asset_list' %}">查看资产</a></li>
+                            <li><a href="{% url 'asset_add' %}">添加资产</a></li>
+                            <li><a href="{% url 'asset_update_log' %}">变更记录</a></li>
+                        </ul>
+                    </li>
+
+
+                    <li id="web">
+
+                        <a href="#"><i class="fa fa fa-globe"></i> <span class="nav-label">站点管理</span><span class="fa arrow"></span></a>
+
+                        <ul class="nav nav-second-level collapse">
+
+                            <li><a href="{% url 'web_site_list' %}">网站节点</a></li>
+                            <li><a href="{% url 'web_conf_list' %}">配置管理</a></li>
+
+                            <li><a href="#">更新管理<span class="fa arrow"></span></a>
+                                <ul class="nav nav-third-level">
+                                    <li class="web_update_file"><a href="{% url 'web_update_file' %}"><i class="icon-map-marker"></i>站点更新</a></li>
+                                    <li class="web_update_conf"><a href="{% url 'web_update_conf' %}"><i class="icon-map-marker"></i>配置更新</a></li>
+                                </ul>
+                            </li>
+                            <li><a href="#">操作记录<span class="fa arrow"></span></a>
+                                <ul class="nav nav-third-level">
+                                    {% for num in pro_info %}
+                                    <li class="web_site_crontrol_log"><a href="{% url 'web_site_crontrol_log' %}?project={{ num.mini_name }}">{{ num }}</a></li>
+                                    {% endfor %}
+                                </ul>
+                            </li>
+
+                        </ul>
+
+                    </li>
+
+                    {% for i in user.project.all %}
+                        {% ifequal "inc" i.mini_name %}
+                    <li id="inc">
+
+                        <a href="#"><i class="fa fa-rebel"></i> <span class="nav-label">{{ i.name }}</span><span class="fa arrow"></span></a>
+
+                        <ul class="nav nav-second-level collapse">
+
+                            <li><a href="{% url 'inc_host_init' %}">服务器初始化</a></li>
+
+                            <li><a href="{% url 'inc_db_init' %}">数据库初始化</a></li>
+
+                            <li><a href="{% url 'game_deploy' %}">新服安装</a></li>
+                            <li id="inc_gameinfo">
+                                <a href="#">游戏服管理<span class="fa arrow"></span></a>
+                                <ul class="nav nav-third-level">
+                                    <li class="inc_gameinfo"><a href="{% url 'inc_game_info' %}"><i class="icon-map-marker"></i>正式服管理</a></li>
+                                    <li class="inc_gameinfo"><a href="{% url 'inc_game_info' %}?game_type=qc"> <i class="icon-map-marker"></i>测试服管理</a></li>
+                                    <li class="inc_gameinfo"><a href="{% url 'inc_game_info' %}?game_type=ts"> <i class="icon-map-marker"></i>审核服管理</a></li>
+                                </ul>
+                            </li>
+                            <li id="inc_update">
+                                <a href="#">游戏服更新<span class="fa arrow"></span></a>
+                                <ul class="nav nav-third-level">
+                                    <li class="inc_update"><a href="{% url 'inc_update_sql' %}"><i class="icon-map-marker"></i>数据库更新</a></li>
+                                    <li class="inc_update"><a href="{% url 'inc_update_config' %}"><i class="icon-map-marker"></i>配置更新</a></li>
+                                    <li class="inc_update"><a href="{% url 'inc_update_file' %}"><i class="icon-map-marker"></i>服务端更新</a></li>
+                                </ul>
+                            </li>
+
+                            <li id="inc_gamelist">
+                                <a href="#">游戏列表和公告<span class="fa arrow"></span></a>
+                                <ul class="nav nav-third-level">
+                                    <li class="inc_gamelist"><a href="{% url 'inc_server_list' %}"><i class="icon-map-marker"></i>区服列表管理</a></li>
+                                    <li class="inc_gamelist"><a href="{% url 'inc_zone_list' %}"><i class="icon-map-marker"></i>大区列表管理</a></li>
+                                    <li class="inc_gamelist"><a href="{% url 'inc_white_list' %}"><i class="icon-map-marker"></i>白名单和公告管理</a></li>
+                                </ul>
+                            </li>
+
+                            <li><a href="{% url 'inc_conf_manage' %}">游戏配置管理</a></li>
+                            <li><a href="{% url 'inc_graph_status' %}">全服状态图象</a></li>
+                            <li><a href="{% url 'inc_backup' %}">数据备份管理</a></li>
+
+                        </ul>
+
+                    </li>
+                        {% endifequal %}
+                    {% endfor %}
+
+                     <li id="scripting">
+
+                        <a href="#"><i class="fa fa-flask"></i> <span class="nav-label">脚本管理</span><span class="fa arrow"></span></a>
+
+                        <ul class="nav nav-second-level collapse">
+                            {% for num in pro_info %}
+                            <li><a href="{% url 'script_list' %}?project={{ num.mini_name }}">{{ num }}</a></li>
+                            {% endfor %}
+                        </ul>
+
+                    </li>
+
+                     <li id="crontab">
+
+                        <a href="#"><i class="fa fa-table"></i> <span class="nav-label">计划任务</span><span class="fa arrow"></span></a>
+
+                        <ul class="nav nav-second-level collapse">
+
+                            {% for num in pro_info %}
+                                <li><a href="{% url 'task_plan' %}?project={{ num.mini_name }}">{{ num }}</a></li>
+                            {% endfor %}
+
+                        </ul>
+
+                    </li>
+
+                    <li id="multitask">
+
+                        <a href="#"><i class="fa fa-magic"></i> <span class="nav-label">批量任务</span><span class="fa arrow"></span></a>
+
+                        <ul class="nav nav-second-level collapse">
+                            <li><a href="{% url 'file_trans' %}">文件分发</a></li>
+                            <li><a href="{% url 'exec_cmds' %}">批量命令</a></li>
+                            <li><a href="{% url 'exec_script' %}">批量脚本</a></li>
+                            <li><a href="{% url 'user_audit' %}">历史记录</a></li>
+                        </ul>
+
+                    </li>
+
+                    <li id="audit">
+
+                        <a href="#" ><i class="glyphicon glyphicon-eye-open"></i> <span class="nav-label">日志审计</span><span class="fa arrow"></span></a>
+
+                        <ul class="nav nav-second-level collapse">
+                            {% for num in pro_info %}
+                                <li><a href="{% url 'log_list' %}?project={{ num.mini_name }}">{{ num }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+
+                    <li id="cdn">
+
+                        <a href="#"><i class="fa fa-flask"></i> <span class="nav-label">内容管理</span><span class="label label-warning pull-right">cdn</span></a>
+
+                        <ul class="nav nav-second-level collapse">
+                            <li><a href="{% url 'cdn_url_update' %}?type=url&project=09games">URL刷新</a></li>
+                            <li><a href="{% url 'cdn_url_update' %}?type=dir&project=09games">目录刷新</a></li>
+                        </ul>
+
+                    </li>
+
+                    {% ifequal user.is_admin 1 %}
+
+                    <li id="manager">
+
+                        <a href="#" ><i class="fa fa-gears"></i> <span class="nav-label">系统设置</span><span class="fa arrow"></span></a>
+
+                        <ul class="nav nav-second-level collapse">
+
+                            <li class="user_list"><a href="{% url 'user_list' %}">用户管理</a></li>
+
+                            <li class="dept_list"><a href="{% url 'dept_list' %}">部门管理</a></li>
+
+                            <li class="pro_list"><a href="{% url 'pro_list' %}">项目管理</a></li>
+
+                            <li class="role_list"><a href="{% url 'role_list' %}">角色管理</a></li>
+
+                            <li class="perm_list"><a href="{% url 'perm_list' %}">权限列表</a></li>
+
+                        </ul>
+
+                    </li>
+                    {% endifequal %}
+
+                </ul>
+
+
+
+            </div>
+
+        </nav>
+

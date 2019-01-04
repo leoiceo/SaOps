@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block page-content %}
+{% include 'nav_cat_bar.html' %}
+{% load mytags %}
+
+<link href="/static/css/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet">
+<link href="/static/css/plugins/dataTables/dataTables.responsive.css" rel="stylesheet">
+<link href="/static/css/plugins/dataTables/dataTables.tableTools.min.css" rel="stylesheet">
+
+<div class="wrapper wrapper-content">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>游戏服和配置文件选择</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            <i class="fa fa-wrench"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-user">
+                            <li><a href="#">Config option 1</a>
+                            </li>
+                            <li><a href="#">Config option 2</a>
+                            </li>
+                        </ul>
+                        <a class="close-link">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="ibox-content">
+                    <div class="row">
+                        <div class="col-sm-4 m-b-xs">
+                            <a  class="btn btn-primary btn-write" href="?project={{project}}&conf_type=1&platform={{platform}}">Nginx配置文件</a>
+                            <a  class="btn btn-primary btn-write" href="?project={{project}}&conf_type=2&platform={{platform}}">站点配置文件</a>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <form id="contents_form" name="contents_form">
+                            <table class="table table-hover table-bordered">
+                                <thead>
+                                  <tr class="">
+                                    <th class="text-center">全选<input id="checkall" type="checkbox" class="i-checks" name="checkall" value="checkall" data-editable='false' onclick="check_all('contents_form')"></th>
+                                    <th class="text-center">项目</th>
+                                    <th class="text-center">平台</th>
+                                    <th class="text-center">域名</th>
+                                    <th class="text-center">公网IP</th>
+                                    <th class="text-center">内网IP</th>
+                                    <th class="text-center">网站部署目录</th>
+                                    <th class="text-center">备注</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {% for num in web_info %}
+                                    <tr class="text-center">
+                                      <td>
+                                          {{forloop.counter}}.<input type="checkbox"  name="subcheck"  value={{num.p_ip}}+{{ num.s_ip }}+{{num.web_dir}}+{{num.id}}>
+                                      </td>
+                                      <td>{{num.project}}</td>
+                                      <td>{{num.platform}}</td>
+                                      <td>{{num.domain}}</td>
+                                      <td>{{num.p_ip}}</td>
+                                      <td>{{num.s_ip}}</td>
+                                      <td>{{num.web_dir}}</td>
+                                      <td>{{num.remark}}</td>
+                                    </tr>
+                                  {% endfor %}
+                                </tbody>
+                            </table>
+
+                            <div class="hr-line-dashed"></div>
+                            <p><b><font color="red">请选择需要更新的目标配置文件: *</font></b></p>
+                                {% ifequal config_status 0 %}
+                                    <font class="red-fonts">{{ project }}-{{ platform }}-相应配置文件未生成</font>
+                                {% else %}
+                                    {% for num in config_info %}
+                                      <input type="checkbox" name="filename" value={{num.cf_name}}>{{ num.cf_dir }}/{{num.cf_name}}
+                                    {% endfor %}
+                                {% endifequal %}
+                            <div class="hr-line-dashed"></div>
+                        </form>
+                        <button type="button" class="btn btn-primary dim" data-toggle="modal" data-target="#comfire_conf" data-whatever="@mdo" onclick="update_config()">更新配置文件</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" role="dialog" aria-labelledby="gridSystemModalLabel" id="comfire_conf">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="gridSystemModalLabel" align="center">网站配置文件更新</h4>
+        </div>
+        <div class="modal-body">
+        <div class="container-fluid" align="center">
+            <p class="open_check_list"></p>
+        </div>
+        </div>
+        <div class="modal-footer">
+            <button id="update-game-config" type="submit" class="btn btn-primary dim" form="contents_form" formmethod="post" formaction="{% url 'web_update_conf_status' %}?project={{ project }}&area={{area_name}}&platform={{platform}}">确定</button>
+            <button type="button" class="btn btn-info dim" data-dismiss="modal">关闭</button>
+        </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<script src="/static/js/plugins/dataTables/jquery.dataTables.js"></script>
+<script src="/static/js/plugins/dataTables/dataTables.bootstrap.js"></script>
+<script src="/static/js/plugins/dataTables/dataTables.responsive.js"></script>
+<script src="/static/js/plugins/dataTables/dataTables.tableTools.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('.dataTables-example').dataTable({
+            responsive: true,
+            "dom": 'T<"clear">lfrtip',
+            "iDisplayLength":25,
+            "tableTools": {
+                "aButtons":["copy","xls",'print'],
+                "sSwfPath": "/static/js/plugins/dataTables/swf/copy_csv_xls_pdf.swf"
+            }
+        });
+    });
+</script>
+{%endblock%}

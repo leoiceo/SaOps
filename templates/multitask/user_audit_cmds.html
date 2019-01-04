@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block page-content %}
+{% include 'nav_cat_bar.html' %}
+{% load mytags %}
+
+<div class="wrapper wrapper-content">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>批量执行命令记录</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            <i class="fa fa-wrench"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-user">
+                            <li><a href="#">Config option 1</a>
+                            </li>
+                            <li><a href="#">Config option 2</a>
+                            </li>
+                        </ul>
+                        <a class="close-link">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="ibox-content">
+                    <div class="row">
+                    <div class="col-sm-4 m-b-xs">
+                            <a type="button" class="btn btn-primary btn-sm" href="{% url 'user_audit' %}?type=file_trans">文件分发记录</a>
+                            <a type="button" class="btn btn-primary btn-sm" href="{% url 'user_audit' %}?type=script_exec">脚本执行记录</a>
+                            <a type="button" class="btn btn-primary btn-sm" href="{% url 'user_audit' %}?type=cmd_exec">命令执行记录</a>
+                    </div>
+                    </div>
+                    <div id="txtHint">
+                        <form action="" >
+                            <table class="table table-hover table-bordered dataTables-example">
+                                <thead>
+                                    <th class="text-center">项目</th>
+                                    <th class="text-center">目标IP</th>
+                                    <th class="text-center">命令</th>
+                                    <th class="text-center">状态</th>
+                                    <th class="text-center">日志信息</th>
+                                    <th class="text-center">返回结果</th>
+                                    <th class="text-center">执行时间</th>
+{#                                    <th class="text-center">开始时间</th>#}
+{#                                    <th class="text-center">结束时间</th>#}
+                                    <th class="text-center">操作人</th>
+                                </thead>
+                                <tbody>
+                                    {% for num in status_info %}
+                                    <tr class="text-center">
+                                        <td>{{num.project}}</td>
+                                        <td>{{num.p_ip}}</td>
+                                        <td>{{num.cmd}}</td>
+                                        <td>
+                                            <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width: {{num.status}}">{{num.status}}</div>
+                                        </td>
+                                        <td>{{num.log|safe}}</td>
+                                        <td><a data-toggle="modal" data-target="#display_result_{{num.id}}">查看结果</a></td>
+                                        <td>{{num.total_time}}s</td>
+{#                                        <td>{{num.start_time| print_time }}</td>#}
+{#                                        {% ifequal num.end_time None %}#}
+{#                                            <td>异常!任务未完成</td>#}
+{#                                        {% else %}#}
+{#                                            <td>{{num.end_time| print_time }}</td>#}
+{#                                        {% endifequal %}#}
+                                        <td>{{num.operator}}</td>
+                                    </tr>
+
+                                        <div class="modal fade" role="dialog" aria-labelledby="gridSystemModalLabel" id="display_result_{{num.id}}">
+                                          <div class="modal-dialog modal-lg" role="document">
+                                            <div class="modal-content">
+                                              <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                                <h4 class="modal-title" id="gridSystemModalLabel" align="center">{{ num.p_ip }} 执行 {{ num.cmd }} 返回结果详细信息</h4>
+                                              </div>
+                                              <div class="modal-body">
+                                                <div class="container-fluid" align="pull-left">
+                                                    <pre style="color:green;">{{ num.result|get_data_log }}</pre>
+                                                    <pre style="color:red;">{{ num.result|get_error_log }}</pre>
+                                                </div>
+                                              </div>
+                                            </div><!-- /.modal-content -->
+                                          </div><!-- /.modal-dialog -->
+                                        </div><!-- /.modal -->
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<link href="/static/css/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet">
+<link href="/static/css/plugins/dataTables/dataTables.responsive.css" rel="stylesheet">
+<link href="/static/css/plugins/dataTables/dataTables.tableTools.min.css" rel="stylesheet">
+<script src="/static/js/plugins/dataTables/jquery.dataTables.js"></script>
+<script src="/static/js/plugins/dataTables/dataTables.bootstrap.js"></script>
+<script src="/static/js/plugins/dataTables/dataTables.responsive.js"></script>
+<script src="/static/js/plugins/dataTables/dataTables.tableTools.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+            $('.dataTables-example').dataTable({
+                responsive: true,
+                "dom": 'T<"clear">lfrtip',
+                "iDisplayLength":10,
+                "tableTools": {
+                    "aButtons":["copy","xls",'print'],
+                    "sSwfPath": "/static/js/plugins/dataTables/swf/copy_csv_xls_pdf.swf"
+                }
+            });
+        });
+
+</script>
+{%endblock%}

@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block page-content %}
+{% include 'nav_cat_bar.html' %}
+
+<div class="wrapper wrapper-content">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>查看选择服务器</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            <i class="fa fa-wrench"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-user">
+                            <li><a href="#">未启用 1</a>
+                            </li>
+                            <li><a href="#">未启用 2</a>
+                            </li>
+                        </ul>
+                        <a class="close-link">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="ibox-content">
+                    <div class="row">
+                        {% if data_log %}
+                            <div class="alert alert-success text-center">{{ data_log }}</div>
+                        {% endif %}
+                         {% if error_log %}
+                            <div class="alert alert-danger text-center">{{ error_log }}</div>
+                        {% endif %}
+
+                    </div>
+                    <form id="contents_form" name="contents_form" >
+                            {% for num in menu %}
+                                {{forloop.counter}}.<input type="checkbox" class="i-checks" name="subcheck" value="{{num}}"  checked="checked" />{{num}} <br>
+                            {% endfor %}
+                        <input id="checkall" type="checkbox" class="i-checks" name="checkall" value="checkall" data-editable='false' onclick="check_all('contents_form')">全选/全不选
+
+                    </form>
+                    <br>
+                    <button type="submit" class="btn btn-primary dim"  form="contents_form" formmethod="post" formaction="{% url 'check_task_hosts' %}?project={{project}}&script_use={{script_use}}&script_name={{script_name}}&action=save">确认选择</button>
+                    <a type="submit" class="btn btn-primary" href="{% url 'task_plan' %}?project={{project}}" >返回</a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+{%endblock%}

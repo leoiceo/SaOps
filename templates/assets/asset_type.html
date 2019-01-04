@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block page-content %}
+{% include 'nav_cat_bar.html' %}
+
+<link href="/static/css/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet">
+<link href="/static/css/plugins/dataTables/dataTables.responsive.css" rel="stylesheet">
+<link href="/static/css/plugins/dataTables/dataTables.tableTools.min.css" rel="stylesheet">
+
+<div class="panel row">
+        <div class="ibox-title">
+            <h5>资产详细信息列表</h5>
+                <div class="ibox-tools">
+                    <a class="collapse-link">
+                        <i class="fa fa-chevron-up"></i>
+                    </a>
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                        <i class="fa fa-wrench"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-user">
+                        <li><a href="#">未启用 1</a>
+                            </li>
+                            <li><a href="#">未启用 2</a>
+                            </li>
+                        </ul>
+                        <a class="close-link">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+        </div>
+
+        <div class="panel-body table-responsive">
+            <form id="contents_form" name="contents_form">
+            <table id="asset_list" class="table table-striped table-bordered table-hover dataTables-example">
+                <thead >
+                    <tr>
+                        <th>资产ID</th>
+                        <th>资产类型</th>
+                        <th>Name</th>
+                        <th>SN</th>
+                        <th>IDC</th>
+                        <th>业务线</th>
+                        <th>管理IP</th>
+                        <th>制造商</th>
+                        <th>型号</th>
+                        <th>CPU型号</th>
+                        <th>CPU核数</th>
+                        <th>内存(GB)</th>
+                        <th>硬盘(GB)</th>
+                        <th>状态</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for a in assets %}
+                    <tr class="text-center" >
+                        <td data-editable='false'><a href="/asset/asset_list/{{ a.id }}">{{ a.id }}</a></td>
+                        <td data-editable='false'>{{ a.get_asset_type_display }}</td>
+                        <td data-editable='false'>{{ a.name }}</td>
+                        <td data-editable='false'>{{ a.sn }}</td>
+                        <td data-editable='false'>{{ a.idc }}</td>
+                        <td data-editable='false'>{{ a.business_unit }}</td>
+                        <td data-editable='false'>{{ a.management_ip }}</td>
+                        <td data-editable='false'>{{ a.manufactory }}</td>
+                        <td data-editable='false'>{{ a.server.model }}</td>
+                        <td data-editable='false'>{{ a.cpu }}</td>
+                        <td data-editable='false'>{{ a.cpu.cpu_core_count}}</td>
+                        <td data-editable='false'>{% for rams in a.ram_set.select_related %} {% widthratio rams.capacity 1024 rams.slot %}{% endfor %}</td>
+                        <td data-editable='false'>{% for disks in a.disk_set.select_related %} {% widthratio disks.capacity 1 disks.slot %}{% endfor %}</td>
+                        <td data-editable='false'>{{ a.status}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+           </table>
+        </form>
+        </div>
+    </div>
+
+
+
+<script src="/static/js/plugins/dataTables/jquery.dataTables.js"></script>
+<script src="/static/js/plugins/dataTables/dataTables.bootstrap.js"></script>
+<script src="/static/js/plugins/dataTables/dataTables.responsive.js"></script>
+<script src="/static/js/plugins/dataTables/dataTables.tableTools.min.js"></script>
+
+<script type="text/javascript"type="text/javascript">
+    $(document).ready(function(){
+        $('#editable').editableTableWidget({editor: $('<textarea>')});
+    });
+    $(document).ready(function() {
+        $('.dataTables-example').dataTable({
+            responsive: true,
+            "dom": 'T<"clear">lfrtip',
+            "tableTools": {
+            "sSwfPath": "/static/js/plugins/dataTables/swf/copy_csv_xls_pdf.swf"
+            }
+        });
+   });
+</script>
+{% endblock %}

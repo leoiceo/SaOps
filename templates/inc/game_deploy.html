@@ -1,0 +1,235 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block page-content %}
+{% include 'nav_cat_bar.html' %}
+
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>新服安装</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            <i class="fa fa-wrench"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-user">
+                            <li><a href="#">未启用 1</a>
+                            </li>
+                            <li><a href="#">未启用 2</a>
+                            </li>
+                        </ul>
+                        <a class="close-link">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="ibox-content">
+                    <div class="row " >
+
+                        <div class="col-sm-4 m-b-xs">
+                              {% for num in inc_area_info %}
+                                <a  class="btn btn-primary btn-write" href="?project={{project}}&area={{num}}"> {{num}}</a>
+                              {% endfor %}
+                        </div>
+
+                    </div>
+                    <div class="table-responsive">
+                      {% if err_data %}
+                          <div class="alert alert-danger text-center">{{ err_data }}</div>
+                      {% endif %}
+                      <form id="nameform" onsubmit="return validate_form(this)">
+                        <table class="table table-striped table-bordered table-hover dataTables-example">
+                        <thead>
+                            <tr>
+                                <th class="text-center">编号</th>
+                                <th class="text-center">项目</th>
+                                <th class="text-center">地区</th>
+                                <th class="text-center">平台类型</th>
+                                <th class="text-center">服务器用途</th>
+                                <th class="text-center">公网IP</th>
+                                <th class="text-center">内网IP</th>
+                                <th class="text-center">端口</th>
+                                <th class="text-center">数据库地址</th>
+                                <th class="text-center">开服数量</th>
+                                <th class="text-center">服务器状态</th>
+                                <th class="text-center">数据库状态</th>
+                                <th class="text-center">备注</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for num in inc_server %}
+                            <tr class="text-center">
+                                  <td>
+                                      {% if num.host_init == 1 and num.db_init == 1 %}
+                                        {{forloop.counter}}.<input type="radio" data-toggle="radio" name="choice_host"  value="{{ num.project.mini_name }}+{{ num.p_ip }}+{{ num.s_ip }}+{{ num.area.mini_name }}+{{ num.platform.mini_name }}+{{ num.db_ip }}" data-radiocheck-toggle="radio">
+                                      {% else %}
+                                        {{forloop.counter}}.<input type="radio" data-toggle="radio" name="choice_host" DISABLED>
+                                      {% endif %}
+                                  </td>
+                                  <td>{{num.project.mini_name}}</td>
+                                  <td>{{num.area}}</td>
+                                  <td>{{num.platform.mini_name}}</td>
+                                  <td>{% for use in num.use.all %} {{use}}{% endfor %}</td>
+                                  <td>{{num.p_ip}}</td>
+                                  <td>{{num.s_ip}}</td>
+                                  <td>{{num.port}}</td>
+                                  <td>{{num.db_ip}}</td>
+                                  <td>{{num.game_count}}</td>
+                                  <td>
+                                      {% ifequal num.host_init 1 %}
+                                        <font color="green">已初始化</font>
+                                      {% else %}
+                                        <font color="red">未初始化</font>
+                                      {% endifequal %}
+                                  </td>
+                                  <td>
+                                      {% ifequal num.db_init 1 %}
+                                        <font color="green">已初始化</font>
+                                      {% else %}
+                                        <font color="red">未初始化</font>
+                                      {% endifequal %}
+                                  </td>
+                                  <td>{{num.commit}}</td>
+                            </tr>
+                           {% endfor %}
+                            </tbody>
+
+                        </table>
+                    </div>
+
+                        <div class="hr-line-dashed"></div>
+                          <div class="input-group col-xs-3 has-success">
+                             <span class="input-group-addon">选择发行商</span>
+                             <select class="form-control" name="game_publisher">
+                                    <option value="atme" >爱特米</option>
+                                    {% for num in publisher_info %}
+                                    <option value={{num.mini_name}} >{{num.name}}</option>
+                                  {% endfor %}
+                                </select>
+                          </div>
+                            <br>
+
+                              <div class="input-group col-xs-3 has-success">
+                                 <span class="input-group-addon">区服名称</span>
+                                 <input type="text" name="server_name" class="form-control" placeholder="">
+                              </div>
+                            <br>
+
+
+                              <div class="input-group col-xs-3 has-success">
+                                 <span class="input-group-addon">服务器ID</span>
+                                 <input type="text" name="server_id" class="form-control" placeholder="">
+                              </div>
+                            <br>
+
+                            <div class="input-group col-xs-3 has-success">
+                                 <span class="input-group-addon">大区ID</span>
+                                 <input type="text" name="zone_id" class="form-control" placeholder="">
+                              </div>
+                            <br>
+
+                                <div class="input-group col-xs-3 has-success">
+                                 <span class="input-group-addon">开服日期</span>
+                                 <input type="text" name="date" class="form-control" placeholder="" id="datetimepicker2">
+                            </div><br>
+
+                          </form>
+
+                        <button type="submit" class="btn btn-primary dim" form="nameform" formmethod="post" formaction="{% url 'game_deploy_check' %}" name="game_type" value="online">游戏服提交</button>
+                        <button type="submit" class="btn btn-info dim"  form="nameform" formmethod="post" formaction="{% url 'game_deploy_check' %}" name="game_type" value="fight">战场服提交</button><nobr>
+                        <button type="submit" class="btn btn-info dim"  form="nameform" formmethod="post" formaction="{% url 'game_deploy_check' %}" name="game_type" value="log">日志服提交</button><nobr>
+                        <button type="submit" class="btn btn-info dim"  form="nameform" formmethod="post" formaction="{% url 'game_deploy_check' %}" name="game_type" value="gm">GM服提交</button><nobr>
+                        <button type="submit" class="btn btn-info dim"  form="nameform" formmethod="post" formaction="{% url 'game_deploy_check' %}" name="game_type" value="login">登陆服提交</button><nobr>
+                        <button type="submit" class="btn btn-success dim"  form="nameform" formmethod="post" formaction="{% url 'game_deploy_check' %}" name="game_type" value="test" disabled>测试服提交</button><nobr>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<script src="/static/js/plugins/dataTables/jquery.dataTables.js"></script>
+<script src="/static/js/plugins/dataTables/dataTables.bootstrap.js"></script>
+<script src="/static/js/plugins/dataTables/dataTables.responsive.js"></script>
+<script src="/static/js/plugins/dataTables/dataTables.tableTools.min.js"></script>
+
+<link href="/static/css/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet">
+<link href="/static/css/plugins/dataTables/dataTables.responsive.css" rel="stylesheet">
+<link href="/static/css/plugins/dataTables/dataTables.tableTools.min.css" rel="stylesheet">
+
+<script type="text/javascript">
+
+function validate_required(field,alerttxt)
+{
+with (field)
+  {
+  if (value==null||value=="")
+    {alert(alerttxt);return false}
+  else {return true}
+  }
+}
+
+function validate_form(thisform)
+{
+with (thisform)
+  {
+
+ if(validate_required(server_id,"填写服务器ID!")==false)
+    {server_id.focus();return false}
+  else if(validate_required(large_id,"填写大区ID!")==false)
+    {large_id.focus();return false}
+
+  else if(validate_required(date,"填写开服日期!")==false)
+    {date.focus();return false}
+  else if(validate_required(qufu,"填写区服名称!")==false)
+    {qufu.focus();return false}
+  }
+
+}
+
+function get_radio(){
+
+  var test = $('input[name="q"]:checked').val();
+  server_type = test.split('+');
+  // alert(ip[0]);
+  $(".game_platform").attr("value",server_type[4]);
+
+}
+
+</script>
+
+<script>
+//日期选择器
+$('#datetimepicker2').datetimepicker({
+                onGenerate:function( ct ){
+                $(this).find('.xdsoft_date.xdsoft_weekend')
+                //      .addClass('xdsoft_disabled');
+        },
+        weekends:['01.01.2014','02.01.2014','03.01.2014','04.01.2014','05.01.2014','06.01.2014'],
+        yearOffset:0,
+        lang:'ch',      //中文显示
+        timepicker:false,
+        format:'Y-m-d',         //格式年月日
+        formatDate:'Y-m-d',
+});
+
+$(document).ready(function() {
+            $('.dataTables-example').dataTable({
+                responsive: true,
+                "dom": 'T<"clear">lfrtip',
+                "tableTools": {
+                    "aButtons":false,
+                    //"sSwfPath": "/static/js/plugins/dataTables/swf/copy_csv_xls_pdf.swf"
+                }
+            });
+        });
+</script>
+
+{%endblock%}

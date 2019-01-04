@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block page-content %}
+{% include 'nav_cat_bar.html' %}
+
+
+  <div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div id="ibox-content" class="ibox-title">
+                    <h5> 填写主机基本信息 </h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            <i class="fa fa-wrench"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-user">
+                            <li><a href="#">未启用 1</a>
+                            </li>
+                            <li><a href="#">未启用 2</a>
+                            </li>
+                        </ul>
+                        <a class="close-link">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="ibox-content">
+                    <div class="panel blank-panel">
+                        <div class="panel-options">
+                            <ul class="nav nav-tabs">
+                                <li><a href="{% url 'host_add' %}" class="text-center"><i class="fa fa-laptop"></i> 单台添加 </a></li>
+                                <li class="active"><a href="{% url 'host_add_multi' %}" class="text-center"><i class="fa fa-bar-chart-o"></i> 批量添加 </a></li>
+                                <li class="text-center"><a href="{% url 'host_add_excel' %}" class="text-center"><i class="fa fa-table"></i> 导入Excel </a></li>
+                            </ul>
+                        </div>
+                        <div class="panel-body">
+                            <div id="tab-2" class="ibox float-e-margins tab-pane active">
+                                <p>请参考如下格式填写, 多台主机回车换行, 具体格式如下: </p>
+                                <p class="text-info">0.主机名 1.公网IP  2.内网IP 3.数据库IP 4.SSH端口 5.系统类型 6.所属项目 7.IDC 8.服务器用途  9.地区 10.平台类型 11.服务器登录密码  12.备注 (不知道的地方用none代替)</p>
+                                    <form id="host_multi" method="post" class="form-horizontal">
+                                        <div ><textarea id="host_multi" name="host_multi" type="text" placeholder="" class="form-control" >hostname {% for h in host_info %}{{h.p_ip}} {{h.s_ip}} {{h.db_ip}} {{h.port}} {{h.os_type}} {{h.project}} {{h.idc}} {% for i in h.use.all %}{{i.use_name}}{% endfor %}  {{h.area.area_name}} {{h.platform.plat_name}} {{h.login_pass}} {{h.commit}} {% endfor %}</textarea></div>
+                                        <div class="hr-line-dashed"></div>
+                                        <div class="form-group">
+                                            <div class="col-sm-4 col-sm-offset-4">
+                                                <button class="btn btn-white" type="submit"> 重置 </button>
+                                                <button class="btn btn-primary" type="submit"> 提交 </button>
+                                            </div>
+                                        </div>
+                                        {% for right in right_list %}
+                                            <font color="green">{{right}}<br></font>
+                                        {% endfor %} 
+                                        {% for err in err_list %}
+                                            <font color="red">{{err}}<br></font>
+                                        {% endfor %}    
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<!-- </div> -->
+
+{%endblock%}

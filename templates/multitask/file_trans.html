@@ -1,0 +1,210 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block page-content %}
+{% include 'nav_cat_bar.html' %}
+
+<link href="/static/css/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet">
+<link href="/static/css/plugins/dataTables/dataTables.responsive.css" rel="stylesheet">
+<link href="/static/css/plugins/dataTables/dataTables.tableTools.min.css" rel="stylesheet">
+
+<div class="wrapper wrapper-content">
+    <div class="row">
+        <form id="contents_form" name="contents_form" enctype="multipart/form-data">
+        <div class="pull-left col-lg-3">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5><font color="green">传输文件</font></h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            <i class="fa fa-wrench"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-user">
+                            <li><a href="#">未启用 1</a>
+                            </li>
+                            <li><a href="#">未启用 2</a>
+                            </li>
+                        </ul>
+                        <a class="close-link">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="ibox-content">
+                    <div class="row">
+                        {% if log %}
+                            <div class="alert alert-success text-center">{{ log }}</div>
+                        {% endif %}
+                        <div class="file-manager">
+                            <h5>文件列表:</h5>
+                            <ul class="folder-list" style="padding: 0">
+                              {% for k,v in file_info.items %}
+                                {% ifequal v "file" %}
+                                  <li><i class="fa fa-file"></i> <input type="radio" name="file" value={{k}}> {{k}}  </li>
+                                {% endifequal %}
+                              {% endfor %}
+                            </ul>
+
+                            <h5>文件夹列表:</h5>
+                            <ul class="folder-list" style="padding: 0">
+                              {% for k,v in file_info.items %}
+                                {% ifequal v "dir" %}
+                                  <li><i class="fa fa-folder"></i> <input type="radio" name="file" value={{k}}> {{k}} </li>
+                                {% endifequal %}
+                              {% endfor %}
+                            </ul>
+
+                            <button type="submit" class="btn btn-danger btn-sm dim"  form="contents_form" formmethod="post" formaction="{% url 'file_trans_edit' %}?project={{project}}&action=delete" >
+                                <i class="fa fa-warning"></i>&nbsp;&nbsp;<span class="bold">删除文件</span>
+                            </button>
+
+                            <div class="hr-line-dashed"></div>
+                            <h5 class="tag-title">接收路径:</h5>
+                            <div class="input-group col-xs-12 has-success">
+                               <input type="text" name="file_dir" class="form-control" placeholder="">
+                            </div>
+                            <h5>注:目录请写绝对路径</h5>
+                                <button type="submit" class="btn btn-warning dim"  form="contents_form" formmethod="post" formaction="{% url 'file_trans_process' %}?project={{project}}" >
+                                    <i class="fa fa-exchange"></i>&nbsp;&nbsp;<span class="bold">发送给服务器</span></button>
+                            </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5><font color="green">上传文件</font></h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            <i class="fa fa-wrench"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-user">
+                            <li><a href="#">未启用 1</a>
+                            </li>
+                            <li><a href="#">未启用 2</a>
+                            </li>
+                        </ul>
+                        <a class="close-link">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="ibox-content">
+                    <div class="row">
+                        <div class="file-manager">
+                            <div class="form-group has-success">
+                              <input type="file" name="upload_file" class="btn btn-sm btn-info btn-block"/>
+                              <span class="input-icon fui-check-inverted"></span>
+                              <h5>注:上传文件夹,请打包成zip后再上传</h5>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary dim" form="contents_form" formmethod="post" formaction="{% url 'file_trans' %}?project={{project}}" >
+                                <i class="fa fa-upload"></i>&nbsp;&nbsp;<span class="bold">上传到源目录</span>
+                            </button>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="pull-right col-lg-9">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>选择服务器</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            <i class="fa fa-wrench"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-user">
+                            <li><a href="#">未启用 1</a>
+                            </li>
+                            <li><a href="#">未启用 2</a>
+                            </li>
+                        </ul>
+                        <a class="close-link">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="ibox-content">
+                    <div class="row">
+                    <div class="col-sm-12 m-b-xs">
+                        {% for pro in pro_info %}
+                            <a type="button" class="btn btn-primary btn-sm" href="{% url 'file_trans' %}?project={{pro.mini_name}}">{{pro.name}}</a>
+                        {% endfor %}
+                    </div>
+                    </div>
+
+                    <table class="table table-striped table-bordered table-hover dataTables-example">
+                          <thead>
+                            <th class="text-center"></th>
+                            <th class="text-center">项目</th>
+                            <th class="text-center">地区</th>
+                            <th class="text-center">平台</th>
+                            <th class="text-center">操作系统</th>
+                            <th class="text-center">IP</th>
+                            <th class="text-center">端口</th>
+                            <th class="text-center">服务器用途</th>
+                            <th class="text-center">备注</th>
+                          </thead>
+                          <tbody>
+                            {% for num in host_info %}
+                              <tr class="text-center">
+                                <td >{{forloop.counter}}.<input type="checkbox" class="i-checks" name="host" value={{num.p_ip}}></td>
+                                <td>{{num.project.name}}</td>
+                                <td>{{num.area.area_name}}</td>
+                                <td>{{num.platform.plat_name}}</td>
+                                <td>{{num.os_type}}</td>
+                                <td>{{num.p_ip}}</td>
+                                <td>{{num.port}}</td>
+                                <td>{% for use in num.use.all %} {{use}}{% endfor %}</td>
+                                <td>{{num.commit}}</td>
+                              </tr>
+                            {% endfor %}
+                          </tbody>
+                        </table>
+                        <input id="checkall" type="checkbox" class="i-checks" name="checkall" value="checkall" data-editable='false' onclick="check_all('contents_form')">全选/全不选
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+
+
+<script src="/static/js/plugins/dataTables/jquery.dataTables.js"></script>
+<script src="/static/js/plugins/dataTables/dataTables.bootstrap.js"></script>
+<script src="/static/js/plugins/dataTables/dataTables.responsive.js"></script>
+<script src="/static/js/plugins/dataTables/dataTables.tableTools.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+            $('.dataTables-example').dataTable({
+                responsive: true,
+                "dom": 'T<"clear">lfrtip',
+                "iDisplayLength":50,
+                "tableTools": {
+                    "aButtons":["copy","xls",'print'],
+                    "sSwfPath": "/static/js/plugins/dataTables/swf/copy_csv_xls_pdf.swf"
+                }
+            });
+        });
+
+</script>
+
+{%endblock%}

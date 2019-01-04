@@ -1,0 +1,265 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block page-content %}
+{% include 'nav_cat_bar.html' %}
+
+<div class="wrapper wrapper-content animated fadeInRight">
+<div class="row">
+    <div class="col-lg-10">
+        <div class="ibox float-e-margins">
+            <div id="ibox-content" class="ibox-title">
+                <h5> 填写主机基本信息 </h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            <i class="fa fa-wrench"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-user">
+                            <li><a href="#">未启用 1</a>
+                            </li>
+                            <li><a href="#">未启用 2</a>
+                            </li>
+                        </ul>
+                        <a class="close-link">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="ibox-content">
+                    <div class="panel blank-panel">
+                        <div class="panel-options">
+                            <ul class="nav nav-tabs">
+                                <li class="active"><a href="{% url 'host_add' %}" class="text-center"><i class="fa fa-laptop"></i> 单台添加 </a></li>
+                                <li><a href="{% url 'host_add_multi' %}" class="text-center"><i class="fa fa-bar-chart-o"></i> 批量添加 </a></li>
+                                <li><a href="{% url 'host_add_excel' %}" class="text-center"><i class="fa fa-table"></i>导入Excel</a></li>
+                            </ul>
+                        </div>
+                        <div class="panel-body">
+                            <div class="tab-content">
+                                <div id="tab-1" class="ibox float-e-margins tab-pane active">
+                                    {% if error %}
+                                        <div class="alert alert-danger text-center">{{ error }}</div>
+                                    {% endif %}
+                                    {% if info %}
+                                        <div class="alert alert-success text-center">{{ info }}</div>
+                                    {% endif %}
+
+                                    <form id="assetForm" method="post" class="form-horizontal">
+                                        <div class="form-group"><label class="col-sm-2 control-label">IP地址<span class="red-fonts">*</span> </label>
+                                            <div class="col-sm-4"><input type="text" name="p_ip" placeholder="公网IP" class="form-control"></div>
+                                            <div class="col-sm-4"><input type="text" name="s_ip" placeholder="内网IP" class="form-control"></div>
+                                        </div>
+
+                                        <div class="hr-line-dashed"></div>
+                                        <div class="form-group"><label class="col-sm-2 control-label">端口号<span class="red-fonts">*</span> </label>
+                                            <div class="col-sm-8"><input type="number" value="22" name="port" class="form-control"></div>
+                                        </div>
+
+                                        <div class="hr-line-dashed"></div>
+                                        <div class="form-group"><label class="col-sm-2 control-label">数据库IP </label>
+                                            <div class="col-sm-8"><input type="text" placeholder="填写有用到非本机的数据库" name="db_ip" class="form-control"></div>
+                                        </div>
+
+                                        <div class="hr-line-dashed"></div>
+                                        <div class="form-group">
+                                            <label for="os_type"  class="col-lg-2 control-label">系统类型<span class="red-fonts">*</span> </label>
+                                            <div class="col-sm-8">
+                                                <select id="os_type" name="os_type" class="form-control m-b">
+                                                        <option value="Centos"> Centos </option>
+                                                        <option value="Debian"> Debian </option>
+                                                        <option value="Ubuntu"> Ubuntu </option>
+                                                        <option value="Windows"> Windows </option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="hr-line-dashed"></div>
+                                        <div class="form-group">
+                                            <label for="pro_name"  class="col-lg-2 control-label"> 所属项目<span class="red-fonts">*</span> </label>
+                                            <div class="col-sm-8">
+                                                <select id="pro_name" name="pro_name" class="form-control m-b">
+                                                    {% for i in pro_info %}
+                                                        <option value="{{i.name}}"> {{ i.name }} </option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="hr-line-dashed"></div>
+                                        <div class="form-group">
+                                            <label for="idc_name"  class="col-lg-2 control-label">所属IDC<span class="red-fonts">*</span> </label>
+                                            <div class="col-sm-8">
+                                                <select id="idc_name" name="idc_name" class="form-control m-b">
+                                                    {% for i in idc_info %}
+                                                        <option value="{{i.idc_name}}"> {{ i.idc_name }} </option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="hr-line-dashed"></div>
+                                        <div class="form-group">
+                                            <label for="area_name"  class="col-lg-2 control-label"> 地区<span class="red-fonts">*</span> </label>
+                                            <div class="col-sm-8">
+                                                <select id="area_name" name="area_name" class="form-control m-b">
+                                                    {% for i in area_info %}
+                                                        <option value="{{i.area_name}}"> {{ i.area_name }} </option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="hr-line-dashed"></div>
+                                        <div class="form-group">
+                                            <label for="use_name" class="col-lg-2 control-label">服务器用途<span class="red-fonts">*</span> </label>
+                                            <div class="col-sm-8">
+                                                <select id="use_name" name="use_name" class="form-control m-b" multiple="use_name">
+                                                    {% for g in use_info %}
+                                                        <option value="{{g.use_name}}"> {{ g.use_name }} </option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="hr-line-dashed"></div>
+                                        <div class="form-group">
+                                            <label for="plat_name"  class="col-lg-2 control-label">平台类型<span class="red-fonts">*</span></label>
+                                            <div class="col-sm-8">
+                                                <select id="plat_name" name="plat_name" class="form-control m-b">
+                                                        {% for num in platform_info %}
+                                                            <option value="{{num.plat_name}}"> {{num.plat_name}} </option>
+                                                        {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="hr-line-dashed"></div>
+                                        <div class="form-group"><label class="col-sm-2 control-label">管理员登录密码 </label>
+                                            <div class="col-sm-8"><input type="text" placeholder="服务器登录密码" name="login_pass" class="form-control"></div>
+                                        </div>
+
+                                        <div class="hr-line-dashed"></div>
+                                        <div class="form-group"><label class="col-sm-2 control-label"> 备注 </label>
+                                            <div class="col-sm-8"><input type="text" placeholder="备注说明" name="commit" class="form-control"></div>
+                                        </div>
+
+                                        <div class="hr-line-dashed"></div>
+                                        <div class="form-group">
+                                            <div class="col-sm-4 col-sm-offset-5">
+                                                <button class="btn btn-white" type="reset"> 重置 </button>
+                                                <button class="btn btn-primary" type="submit"> 提交 </button>
+                                                
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+    var showFlag={};
+    function show(o){
+    showFlag[o.name]=o.value;
+    if(showFlag.j_type=="M"){
+        document.getElementById("a1").style.display="";
+    }
+    else{
+        document.getElementById("a1").style.display="none";
+    }};
+
+$('#assetForm').validator({
+    timely: 2,
+    theme: "yellow_right_effect",
+    rules: {
+        check_ip: [/^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])(\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])){3}$/, 'ip地址不正确'],
+        check_port: [/^\d{1,5}$/, '端口号不正确'],
+        type_m: function(element){
+                    return  $("#M").is(":checked");
+            }
+    },
+    fields: {
+        "p_ip": {
+            rule: "required;check_ip",
+            tip: "输入公网IP",
+            ok: "",
+            msg: {required: "必须填写!"}
+        },
+        "unicom_ip": {
+            
+            tip: "输入联通IP",
+            ok: "",
+            
+        },
+        "mobile_ip": {
+            
+            tip: "输入移动IP",
+            ok: "",
+            
+        },
+        "s_ip": {
+            
+            tip: "输入内网IP",
+            ok: "",
+            
+        },
+        "plat_name":{
+            rule: "required",
+            tip: "请选择平台",
+            ok:"",
+            msg: {checked: "必须填写!"}
+        },
+        "port": {
+            rule: "required;check_port",
+            tip: "输入端口号",
+            ok: "",
+            msg: {required: "必须填写!"}
+        },
+        "idc_name": {
+            rule: "required",
+            tip: "选择IDC",
+            ok: "",
+            msg: {checked: "必须填写!"}
+        },
+        "pro_name": {
+            rule: "required",
+            tip: "选择项目",
+            ok: "",
+            msg: {checked: "必须填写!"}
+        },
+        "os_type": {
+            rule: "required",
+            tip: "选择操作系统",
+            ok: "",
+            msg: {checked: "必须填写!"}
+        },
+        "area_name": {
+            rule: "required",
+            tip: "选择机房所在地区",
+            ok: "",
+            msg: {checked: "必须填写!"}
+        },
+        "use_name": {
+            rule: "required",
+            tip: "选择服务器用途",
+            ok: "",
+            msg: {checked: "必须填写!"}
+        }
+    },
+    valid: function(form) {
+        form.submit();
+    }
+});
+
+</script>
+
+{%endblock%}

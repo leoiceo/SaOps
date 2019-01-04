@@ -1,0 +1,53 @@
+{% load mytags %}
+<form action="" >
+<table class="table table-hover table-bordered">
+<thead>
+    <th class="text-center">项目</th>
+    <th class="text-center">地区</th>
+    <th class="text-center">平台</th>
+    <th class="text-center">地址</th>
+    <th class="text-center">域名</th>
+    <th class="text-center">类型</th>
+    <th class="text-center">状态</th>
+    <th class="text-center">日志信息</th>
+    <th class="text-center">返回结果</th>
+    <th class="text-center">操作时间</th>
+    <th class="text-center">操作人</th>
+</thead>
+<tbody>
+    {% for num in status_info %}
+    <tr class="text-center">
+        <td>{{num.project}}</td>
+        <td>{{num.area_name}}</td>
+        <td>{{num.platform}}</td>
+        <td>{{num.p_ip}}</td>
+        <td>{{num.server_name}}</td>
+        <td>{{num.log_type}}</td>
+        <td>
+            <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width: {{num.status}}">{{num.status}}</div>
+        </td>
+        <td>{{num.log|safe}}</td>
+        <td><a data-toggle="modal" data-target="#display_result_{{num.id}}" onclick="timer=window.clearInterval(timer)">查看结果</a></td>
+        <td>{{num.log_time| print_time }}</td>
+        <td>{{num.operator}}</td>
+    </tr>
+    <div class="modal fade" role="dialog" aria-labelledby="gridSystemModalLabel" id="display_result_{{num.id}}">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="gridSystemModalLabel" align="center">{{ num.p_ip }}返回结果详细信息</h4>
+          </div>
+          <div class="modal-body">
+            <div class="container-fluid" align="pull-left">
+                <pre>{{ num.result }}</pre>
+            </div>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+    {% endfor %}
+</tbody>
+</table>
+</form>

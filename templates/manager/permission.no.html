@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block page-content %}
+{% include 'nav_cat_bar.html' %}
+
+<div class="row">
+    <div class="col-lg-12">
+       <div class="ibox float-e-margins">
+          <div style="background:#F8F359" class="ibox-content text-center p-md">
+              <h2 class="text-navy"><span class="text-danger">权限不足!!!</span></p>您的账号没有权限访问此项目,请联系管理员</h2>
+          </div>
+       </div>
+    </div>
+</div>
+
+{% endblock %}

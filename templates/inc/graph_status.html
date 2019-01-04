@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block page-content %}
+{% include 'nav_cat_bar.html' %}
+
+<div class="wrapper wrapper-content">
+    <div class="row">
+
+        <div class="col-lg-6">
+            <div class="ibox float-e-margins">
+
+                <div class="ibox-title">
+                    <h5>{{zone}}_{{platform}} 游戏服当前状态数据图</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            <i class="fa fa-wrench"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-user">
+                            <li><a href="#">Config option 1</a>
+                            </li>
+                            <li><a href="#">Config option 2</a>
+                            </li>
+                        </ul>
+                        <a class="close-link">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <div>
+                            {% for k,v in inc_area_plat_info.items %}
+                            <div class="btn-group">
+                              <button data-toggle="dropdown" class="btn btn-primary dropdown-toggle">{{k}} <span class="caret"></span></button>
+                              <ul class="dropdown-menu">
+                                {% for qq in v %}
+                                  <li class="divider"></li>
+                                    <li><a href="?project={{project}}&area={{k}}&platform={{qq}}">{{qq}}</a></li>
+                                {% endfor %}
+                              </ul>
+                            </div>
+                              {% endfor %}
+                    </div>
+                    <div class="text-center">
+                        <h2>{{down_num}}/{{ up_num }}</h2>
+                        <div id="inception_pic"></div>
+                    </div>
+
+                    <div>
+                        <img alt="" src="/static/img/green.png"><a href="/inc/game_info/?area={{area_name}}&platform={{platform}}&status=1">开启->{{up_num}}</a></img>
+                        <img alt="" src="/static/img/red.png"><a href="/inc/game_info/?area={{area_name}}&platform={{platform}}&status=0">关闭->{{down_num}}</a></img>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<script>
+$(document).ready(function(){
+
+
+        $("#inception_pic").sparkline([{{up_num}}, {{down_num}}], {
+                type: 'pie',
+                height: '140',
+                sliceColors: ['#1ab394', '#ed5565']
+            });
+
+});
+
+</script>
+{% endblock %}

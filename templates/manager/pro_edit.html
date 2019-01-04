@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block page-content %}
+{% include 'nav_cat_bar.html' %}
+
+<div class="wrapper wrapper-content animated fadeInRight">
+        <div class="row">
+            <div class="col-lg-10">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>修改项目信息</h5>
+                        <div class="ibox-tools">
+                            <a class="collapse-link">
+                                <i class="fa fa-chevron-up"></i>
+                            </a>
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                <i class="fa fa-wrench"></i>
+                            </a>
+                            <ul class="dropdown-menu dropdown-user">
+                                <li><a href="#">未启用 1</a>
+                                </li>
+                                <li><a href="#">未启用 2</a>
+                                </li>
+                            </ul>
+                            <a class="close-link">
+                                <i class="fa fa-times"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="ibox-content">
+                        {% for pro in pro_info %}
+                        <form method="post" id="proForm" class="form-horizontal" action="">
+                            {% if info %}
+                                <div class="alert alert-success text-center">{{ info }}</div>
+                            {% endif %}
+                            <div class="form-group">
+                                <label for="pro_name" class="col-sm-2 control-label">项目名称<span class="red-fonts">*</span></label>
+                                <div class="col-sm-8">
+                                    <input id="pro_name" name="pro_name" placeholder="项目名称" type="text" class="form-control" value="{{pro.name}}" >
+                                    <input id="pro_id" name="pro_id" style="display:none;" type="text" class="form-control" value="{{pro.id}}" >
+                                </div>
+                            </div>
+                            <div class="hr-line-dashed"></div>
+                            <div class="form-group">
+                                <label for="name" class="col-sm-2 control-label">简称<span class="red-fonts">*</span></label>
+                                <div class="col-sm-8">
+                                    <input id="pro_mini" name="pro_mini" placeholder="简称" type="text" class="form-control" value="{{pro.mini_name}}" >
+                                </div>
+                            </div>
+                            <div class="hr-line-dashed"></div>
+                            <div class="form-group">
+                                <div class="col-sm-4 col-sm-offset-2">
+                                <button id="submit_button"  class="btn btn-primary" type="submit">确认保存</button>
+                                </div>
+                            </div>
+                        </form>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+$('#proForm').validator({
+    timely: 2,
+    theme: "yellow_right_effect",
+    rules: {
+        check_ip: [/^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])(\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])){3}$/, 'ip地址不正确'],
+        check_port: [/^\d{1,5}$/, '端口号不正确'],
+        type_m: function(element){
+                    return  $("#M").is(":checked");
+            }
+    },
+        "pro_name": {
+            rule: "required",
+            tip: "部门名称",
+            ok: "",
+            msg: {required: "必须填写"}
+        },
+        "pro_url": {
+            rule: "required",
+            tip: "备注",
+            ok: "",
+            msg: {required: "必须填写"}
+        },
+    },
+    valid: function(form) {
+        form.submit();
+    }
+});
+
+</script>
+
+
+
+
+
+
+
+{% endblock %}

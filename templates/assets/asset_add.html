@@ -1,0 +1,182 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block page-content %}
+{% include 'nav_cat_bar.html' %}
+{% load bootstrap %}
+
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-sm-10">
+            <div class="ibox float-e-margins">
+                <div id="ibox-content" class="ibox-title">
+                    <h5> 修改资产基本信息 </h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            <i class="fa fa-wrench"></i>
+                        </a>
+                        <a class="close-link">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="ibox-content">
+                        <div class="panel-body">
+                            <div class="tab-content">
+                                <div id="tab-1" class="ibox float-e-margins tab-pane active">
+                                    {% if error %}
+                                        <div class="alert alert-warning text-center">{{ error }}</div>
+                                    {% endif %}
+                                    {% if msg %}
+                                        <div class="alert alert-success text-center">{{ msg }}</div>
+                                    {% endif %}
+                                    <form id="assetForm" method="post" class="form-horizontal">
+
+                                        {{ af.asset_type|bootstrap_horizontal }}
+
+                                        <div class="hr-line-dashed"></div>
+                                        {{ af.sn|bootstrap_horizontal }}
+
+                                        <div class="hr-line-dashed"></div>
+                                        {{ af.host_name|bootstrap_horizontal }}
+
+                                        <div class="hr-line-dashed"></div>
+                                        {{ af.p_ip|bootstrap_horizontal }}
+
+                                        <div class="hr-line-dashed"></div>
+                                        {{ af.other_ip|bootstrap_horizontal }}
+                                        <p class="col-sm-offset-2">Tips: 多个IP使用,号隔开</p>
+
+                                        <div class="hr-line-dashed"></div>
+                                        {{ af.mac|bootstrap_horizontal }}
+
+                                        <div class="hr-line-dashed"></div>
+                                        {{ af.project|bootstrap_horizontal }}
+
+                                        <div class="hr-line-dashed"></div>
+                                        {{ af.idc|bootstrap_horizontal }}
+
+                                        <div class="hr-line-dashed"></div>
+                                        {{ af.system_version|bootstrap_horizontal }}
+
+                                        <div class="hr-line-dashed"></div>
+                                        {{ af.cpu_type|bootstrap_horizontal }}
+
+                                        <div class="hr-line-dashed"></div>
+                                        {{ af.cpu_core|bootstrap_horizontal }}
+
+                                        <div class="hr-line-dashed"></div>
+                                        {{ af.cpu_total|bootstrap_horizontal }}
+
+                                        <div class="hr-line-dashed"></div>
+                                        {{ af.memory|bootstrap_horizontal }}
+
+                                        <div class="hr-line-dashed"></div>
+                                        {{ af.disk_info|bootstrap_horizontal }}
+
+                                        <div class="hr-line-dashed"></div>
+                                        {{ af.server_type|bootstrap_horizontal }}
+
+                                        <div class="hr-line-dashed"></div>
+                                        {{ af.disk_mount|bootstrap_horizontal }}
+
+                                        <div class="hr-line-dashed"></div>
+                                        {{ af.os_kernel|bootstrap_horizontal }}
+
+                                        <div class="hr-line-dashed"></div>
+                                        {{ af.system_arch|bootstrap_horizontal }}
+
+                                        <div class="hr-line-dashed"></div>
+                                        {{ af.status|bootstrap_horizontal }}
+
+                                       <div class="hr-line-dashed"></div>
+                                        {{ af.admin|bootstrap_horizontal }}
+
+                                        <div class="hr-line-dashed"></div>
+                                        <div class="form-group">
+                                            <div class="col-sm-4 col-sm-offset-2">
+                                                <button class="btn btn-white" type="reset"> 重置 </button>
+                                                <button class="btn btn-primary" type="submit"> 提交 </button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block self_footer_js %}
+<script>
+    $('document').ready(function(){
+        $('#id_use_default_auth').click(function(){
+            if ($(this).is(':checked')){
+                $('#admin_account').css('display', 'none');
+            }
+            else {
+                $('#admin_account').css('display', 'block');
+            }
+        })
+    });
+
+    var required_fields = ["id_hostname", "id_port"];
+    required_fields.forEach(function(field) {
+        $('label[for="' + field + '"]').parent().addClass("required");
+    });
+
+   $('#assetForm').validator({
+        timely: 2,
+        theme: "yellow_right_effect",
+        rules: {
+            check_ip: [/^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])(\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])){3}$/, 'ip地址不正确'],
+            check_port: [/^\d{1,5}$/, '端口号不正确'],
+            use_default_auth: function() {
+                var str1 = $("#id_use_default_auth").is(":checked");
+                if (str1 == true){
+                    var decide = false;
+                } else {
+                    var decide = true;
+                }
+                return decide}
+        },
+        fields: {
+            "hostname": {
+                rule: "required",
+                tip: "填写主机名",
+                ok: "",
+                msg: {required: "必须填写!"}
+            },
+            "port": {
+                rule: "required(use_default_auth)",
+                tip: "输入端口号",
+                ok: "",
+                msg: {required: "必须填写!"}
+            },
+            "username": {
+                rule: "required(use_default_auth)",
+                tip: "输入用户名",
+                ok: "",
+                msg: {required: "必须填写!"}
+            },
+{#            "password": {#}
+{#                rule: "required(use_default_auth)",#}
+{#                tip: "输入密码",#}
+{#                ok: "",#}
+{#                msg: {required: "必须填写!"}#}
+{#            }#}
+        },
+        valid: function(form) {
+            form.submit();
+        }
+    });
+
+</script>
+
+{% endblock %}

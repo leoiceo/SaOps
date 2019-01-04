@@ -1,0 +1,151 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block page-content %}
+{% include 'nav_cat_bar.html' %}
+{% load mytags %}
+
+<script type="text/javascript">
+
+    function validate_required(field,alerttxt)
+    {
+        with (field)
+          {
+          if (value==null||value=="")
+            {alert(alerttxt);return false}
+          else {return true}
+          }
+    }
+
+    function validate_form(thisform)
+    {
+        with (thisform)
+          {
+
+         if(validate_required(script_use,"填写任务名称!")==false)
+            {script_use.focus();return false}
+          else if(validate_required(script_name,"填写脚本名称")==false)
+            {script_name.focus();return false}
+
+          else if(validate_required(minute,"分钟不能为空(每分钟用*)")==false)
+            {minute.focus();return false}
+          else if(validate_required(hour,"小时不能为空(每小时用*)")==false)
+            {hour.focus();return false}
+          else if(validate_required(week,"星期不能为空(每星期用*)")==false)
+            {hour.focus();return false}
+          else if(validate_required(date,"日期不能为空(每天用*)")==false)
+            {hour.focus();return false}
+          else if(validate_required(month,"月份不能为空(每月用*)")==false)
+            {month.focus();return false}
+          }
+
+    }
+</script>
+
+
+<div class="wrapper wrapper-content">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>计划任务列表</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            <i class="fa fa-wrench"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-user">
+                            <li><a href="#">Config option 1</a>
+                            </li>
+                            <li><a href="#">Config option 2</a>
+                            </li>
+                        </ul>
+                        <a class="close-link">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="ibox-content">
+                    {% if err %}
+                    <div class="alert alert-danger text-center">{{ err }}</div>
+                    {% endif %}
+                  <form id="assetForm" method="post" class="form-horizontal"  enctype="multipart/form-data" onsubmit="return validate_form(this)">
+                    <div class="form-group"><label class="col-sm-2 control-label">定时任务名称<span class="red-fonts">*</span></label>
+                        <div class="col-sm-10">
+                            <input type="text" name="new_script_use" class="form-control" value="{{script_use}}">
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+                    <div class="form-group"><label class="col-sm-2 control-label">选择执行脚本<span class="red-fonts">*</span></label>
+                        <div class="col-sm-10">
+                            <select class="form-control" name="new_script_name">
+                                <option value="{{script_name}}" >{{script_name}}</option>
+                                {% for num in script_files %}
+                                    <option value={{num.script_name}} >{{num.script_name}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="hr-line-dashed"></div>
+                    <div class="form-group"><label class="col-sm-2 control-label">定时规则<span class="red-fonts">*</span></label>
+                        <div class="col-sm-10 input-group">
+                            <div class="modal-body">
+                                  <div class="form-group">
+                                      <label class="col-sm-2 control-label">分钟<span class="red-fonts"></span></label>
+                                      <div class="col-sm-5">
+                                          <input  name="minute" placeholder="*" type="text" class="form-control" value="{{dk.minute}}">
+                                      </div>
+                                  </div>
+                                  <div class="hr-line-dashed"></div><br>
+                                  <div class="form-group">
+                                      <label class="col-sm-2 control-label">小时<span class="red-fonts"></span></label>
+                                      <div class="col-sm-5">
+                                          <input  name="hour" placeholder="*" type="text" class="form-control" value="{{dk.hour}}">
+                                      </div>
+                                  </div>
+
+                                  <div class="hr-line-dashed"></div><br>
+                                  <div class="form-group">
+                                      <label class="col-sm-2 control-label">日期<span class="red-fonts"></span></label>
+                                      <div class="col-sm-5">
+                                          <input  name="date" placeholder="*" type="text" class="form-control" value="{{dk.day_of_month}}">
+                                      </div>
+                                  </div>
+                                  <div class="hr-line-dashed"></div><br>
+                                  <div class="form-group">
+                                      <label class="col-sm-2 control-label">月份<span class="red-fonts"></span></label>
+                                      <div class="col-sm-5">
+                                          <input  name="month" placeholder="*" type="text" class="form-control" value="{{dk.month_of_year}}">
+                                      </div>
+                                  </div>
+                                  <div class="hr-line-dashed"></div><br>
+                                  <div class="form-group">
+                                      <label class="col-sm-2 control-label">星期<span class="red-fonts"></span></label>
+                                      <div class="col-sm-5">
+                                          <input  name="week" placeholder="*" type="text" class="form-control" value="{{dk.day_of_week}}">
+                                      </div>
+                                  </div>
+
+                              </div>
+                        </div>
+                    </div>
+            </form>
+                  <div class="hr-line-dashed"></div>
+                  <div align="center">
+                      <button type="submit" class="btn btn-danger"  form="assetForm" formmethod="post" formaction="{% url 'task_plan_manage' %}?project={{project}}&script_use={{script_use}}&script_name={{script_name}}&action=motify">修改</button>
+                      <a type="button" class="btn btn-primary" href="{% url 'task_plan' %}?project={{project}}">返回</a>
+                  </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+{%endblock%}

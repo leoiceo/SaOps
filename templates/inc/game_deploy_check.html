@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block page-content %}
+{% include 'nav_cat_bar.html' %}
+
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>新服安装</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            <i class="fa fa-wrench"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-user">
+                            <li><a href="#">未启用 1</a>
+                            </li>
+                            <li><a href="#">未启用 2</a>
+                            </li>
+                        </ul>
+                        <a class="close-link">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="ibox-content">
+                <form id="nameform" >
+                    <table class="table table-hover table-bordered">
+                        <thead>
+                            <tr class="success">
+                            <th class="text-center">项目</th>
+                            <th class="text-center">地区</th>
+                            <th class="text-center">平台</th>
+                            <th class="text-center">公网IP</th>
+                            <th class="text-center">内网IP</th>
+                            {% if game_type != "fight"  %}
+                                <th class="text-center">数据库IP</th>
+                            {% endif %}
+                            <th class="text-center">区服名称</th>
+                            <th class="text-center">服务器目录</th>
+                            <th class="text-center">游戏类型</th>
+                            <th class="text-center">服务器ID</th>
+                            <th class="text-center">大区ID</th>
+
+                            <th class="text-center">开服时间</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                        <tr class="success text-center">
+                            <td>{{project}}</td>
+                            <td>{{area_name}}</td>
+                            <td>{{plat_mini_name}}</td>
+                            <td>{{p_ip}}</td>
+                            <td>{{s_ip}}</td>
+                            {% if game_type != "fight"  %}
+                                <td>{{db_ip}}</td>
+                            {% endif %}
+                            <td>{{server_name}}</td>
+                            <td>{{app_dir}}</td>
+                            <td>
+                                {% if game_type == "fight"  %}
+                                    战场服
+                                {% elif game_type == "gm" %}
+                                    GM服
+                                {% elif game_type == "log" %}
+                                    日志服
+                                {% elif game_type == "login" %}
+                                    登陆服
+                                {% elif game_type == "online" %}
+                                    游戏服
+                                {% else %}
+                                    测试服
+                                {% endif %}
+                            </td>
+                            <td>{{server_id}}</td>
+                            <td>{{zone_id}}</td>
+                            <td>{{openserver_date}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                        {% ifequal game_type "test" %}
+                            <div class="input-group col-xs-3 has-success">
+                                <span class="input-group-addon">安装版本号</span>
+                                <input type="text" name="version" class="form-control" placeholder="">
+                            </div>
+                            <br>
+                        {% endifequal %}
+
+                </form>
+                {% if err_data %}
+                    <div class="alert alert-danger text-center">{{ err_data }}</div>
+                {% endif %}
+                <br>
+                {% if err_data %}
+                    <button type="submit" class="btn btn-primary btn-danger dim" disabled="disabled" form="nameform" formmethod="post" formaction="#" >禁止开服</button><nobr>&nbsp;</nobr>
+                {% else %}
+                    <button type="submit" class="btn btn-primary dim" form="nameform" formmethod="post" formaction="/inc/inc_install_process/?p_ip={{p_ip}}&s_ip={{ s_ip }}&app_dir={{app_dir}}&server_id={{server_id}}&db_ip={{db_ip}}&date={{openserver_date}}&project={{project}}&area_name={{area_name}}&game_type={{game_type}}&platform={{plat_mini_name}}&server_name={{server_name}}&zone_id={{zone_id}}&server_use={{ server_use }}" >执行开服</button><nobr>&nbsp;</nobr>
+                    <button type="submit" class="btn btn-primary btn-warning dim" form="nameform" formmethod="post" formaction="/inc/inc_add_gameinfo/?p_ip={{p_ip}}&s_ip={{ s_ip }}&app_dir={{app_dir}}&server_id={{server_id}}&db_ip={{db_ip}}&date={{openserver_date}}&project={{project}}&area_name={{area_name}}&game_type={{game_type}}&platform={{plat_mini_name}}&server_name={{server_name}}&zone_id={{zone_id}}" >跳过开服步骤，添加到游戏服管理</button><nobr>&nbsp;</nobr>
+                {% endif %}
+                <a type="submit" class="btn btn-primary btn-danger dim" href="{% url 'game_deploy' %}" >返回</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{%endblock%}

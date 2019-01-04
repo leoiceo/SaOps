@@ -1,0 +1,196 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block page-content %}
+{% include 'nav_cat_bar.html' %}
+{% load mytags %}
+
+
+<link href="/static/css/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet">
+<link href="/static/css/plugins/dataTables/dataTables.responsive.css" rel="stylesheet">
+<link href="/static/css/plugins/dataTables/dataTables.tableTools.min.css" rel="stylesheet">
+
+<div class="wrapper wrapper-content">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>{{area_name}}-{{platform}}-大区列表</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            <i class="fa fa-wrench"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-user">
+                            <li><a href="#">Config option 1</a>
+                            </li>
+                            <li><a href="#">Config option 2</a>
+                            </li>
+                        </ul>
+                        <a class="close-link">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    {% if data_log %}
+                      <div class="alert alert-success text-center">{{ data_log }}</div>
+                  {% endif %}
+                    {% if error_log %}
+                      <div class="alert alert-danger text-center">{{ error_log }}</div>
+                  {% endif %}
+                <div class="row">
+                  <div class="col-sm-5 m-b-xs">
+                    {% for k,v in inc_area_plat_info.items %}
+                        <div class="btn-group">
+                          <button data-toggle="dropdown" class="btn btn-primary dropdown-toggle">{{k}} <span class="caret"></span></button>
+                          <ul class="dropdown-menu">
+                            {% for qq in v %}
+                              <li class="divider"></li>
+                                <li><a href="?area={{k}}&platform={{qq}}">{{qq}}</a></li>
+                            {% endfor %}
+                          </ul>
+                        </div>
+                      {% endfor %}
+                   </div>
+                </div>
+                <div class="table-responsive">
+                  <form id="contents_form" name="contents_form" >
+                    <table class="table table-striped table-bordered table-hover" id="editable" name="editable">
+                        <thead>
+                        <tr>
+                           <th class="text-center"><input id="checkall" type="checkbox" class="i-checks" name="checkall" value="checkall" data-editable='false' onclick="check_all('contents_form')"></th>
+                          <th class="text-center">地区</th>
+                          <th class="text-center">平台</th>
+                          <th class="text-center">最大区间</th>
+                          <th class="text-center">最小区间</th>
+                          <th class="text-center">大区ID</th>
+                          <th class="text-center">大区名称</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                          {% for num in menu %}
+                            <tr class="text-center">
+                              <td data-editable='false' name="server_group" value={{num.zonegroupid}}+{{num.zonegroupname}}><input type="checkbox" data-toggle="checkbox" name="server_group" value='{{num.zonegroupid}}+{{num.zonegroupname}}'></td>
+                              <td data-editable='false'>{{num.area_name}}</td>
+                              <td data-editable='false'>{{num.platform}}</td>
+                              <td name="maxzoneingroup">{{num.maxzoneingroup}}</td>
+                              <td name="minzoneingroup">{{num.minzoneingroup}}</td>
+                              <td name="zonegroupid">{{num.zonegroupid}}</td>
+                              <td name="zonegroupname">{{num.zonegroupname}}</td>
+                            </tr>
+                          {% endfor %}
+                            <tr>
+                              <td data-editable='false'><input type="checkbox" DISABLED></td>
+                              <td data-editable='false'><input type="text" name="area_name" class="form-control" value={{area_name}} readonly="readonly"></td>
+                              <td data-editable='false'><input type="text" name="platform" class="form-control" value={{platform}} readonly="readonly"></td>
+                              <td ><input type="text" name="n_maxzoneingroup" class="form-control" ></td>
+                              <td ><input type="text" name="n_minzoneingroup" class="form-control" ></td>
+                              <td ><input type="text" name="n_zonegroupid" class="form-control" ></td>
+                              <td ><input type="text" name="n_zonegroupname" class="form-control" ></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+
+                    <button type="submit" class="btn btn-primary btn-sm dim"  form="contents_form" formmethod="POST" formaction="/inc/zone_list_edit/?area={{area_name}}&platform={{platform}}&action=add">添加</button>
+                    <button type="button" class="btn btn-danger btn-sm dim" data-toggle="modal" data-target="#del-server" data-whatever="@mdo" onclick="del_server()" >删除</button>
+                    <button type="button" id="alter_button" class="btn btn-warning btn-sm dim" name="alter_button" onclick="alter('contents_form')" >修改</button>
+                    <div class="hr-line-dashed"></div>
+                    <button type="submit" class="btn btn-primary dim" target="_blank" form="contents_form" formmethod="POST" formaction="/inc/zone_list_print/?platform={{platform}}&area={{area_name}}">生成大区列表文件</button>
+                    </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" role="dialog" aria-labelledby="gridSystemModalLabel" id="del-server">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="gridSystemModalLabel" align="center">删除大区列表</h4>
+      </div>
+      <div class="modal-body">
+        <div class="container-fluid" align="center">
+        <p id="open_list"></p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-success dim" name="switch" value="del" form="contents_form" formmethod="post" formaction="/inc/zone_list_edit/?platform={{platform}}&area={{area_name}}&action=delete">确定</button>
+        <button type="button" class="btn btn-info dim" data-dismiss="modal">关闭</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+
+<script src="/static/js/plugins/dataTables/jquery.dataTables.js"></script>
+<script src="/static/js/plugins/dataTables/dataTables.bootstrap.js"></script>
+<script src="/static/js/plugins/dataTables/dataTables.responsive.js"></script>
+<script src="/static/js/plugins/dataTables/dataTables.tableTools.min.js"></script>
+
+<script type="text/javascript">
+  function del_server(){
+        var opendata=new Array();
+        var show=document.getElementsByName('server_group');
+
+        for(var i=0;i<show.length;i++){
+            if(show[i].checked==true){
+            opendata[i]=show[i].value+'<br>';
+        }
+    }
+  for(var i=0;i<opendata.length;i++){
+                if(opendata[i] == "" || typeof(opendata[i]) == "undefined")
+                {
+                        opendata.splice(i,1);
+                        i = i-1;
+                }
+        }
+        document.getElementById("open_list").innerHTML=opendata;
+}
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function() {
+            $('.dataTables-example').dataTable({
+                responsive: true,
+                "dom": 'T<"clear">lfrtip',
+                "iDisplayLength":50,
+                "tableTools": {
+                    "aButtons":["copy","xls",'print'],
+                    "sSwfPath": "/static/js/plugins/dataTables/swf/copy_csv_xls_pdf.swf"
+                }
+            });
+        });
+
+    $(document).ready(function(){
+        $('#editable').editableTableWidget({editor: $('<textarea>')});
+    });
+
+
+    function alter(form) {
+        selectData = GetTableDataBox();
+        console.log(selectData[0])
+        if (selectData[1] != 0) {
+            $.ajax({
+                type: "GET",
+                url: "/inc/zone_list_edit/?platform={{platform}}&area={{area_name}}&action=modify",
+                data: {"editable": selectData[0], "len_table": selectData[1]},
+                success: function (data) {
+                    alert("修改成功");
+                    window.open("/inc/zone_list/?area={{ area_name }}&platform={{ platform }}", "_self");
+                error: window.open("/inc/zone_list/?area={{ area_name }}&platform={{ platform }}", "_self");
+                }
+            });
+        }
+};
+
+</script>
+{% endblock %}

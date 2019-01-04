@@ -1,0 +1,481 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block page-content %}
+{% include 'nav_cat_bar.html' %}
+{% load mytags %}
+{% load custom_tag %}
+<div class="wrapper wrapper-content">
+    <div class="row">
+        <div class="col-lg-3">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <span class="label label-success pull-right">Users</span>
+                    <h5>用户数量</h5>
+                </div>
+                <div class="ibox-content">
+                    <h1 class="no-margins"><a href="{% url 'user_list' %}">{{ users.count }}</a></h1>
+                    <div class="stat-percent font-bold text-success"><i class="fa fa-bolt"></i></div>
+                    <small>All user</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <span class="label label-info pull-right">Hosts</span>
+                    <h5>主机总数</h5>
+                </div>
+                <div class="ibox-content">
+                    <h1 class="no-margins"><a href="{% url 'host_list' %}">{{ hosts.count }}</a></h1>
+                    <div class="stat-percent font-bold text-info"><i class="fa fa-level-up"></i></div>
+                    <small>All host</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <span class="label label-primary pull-right">Online</span>
+                    <h5>实时celery进程</h5>
+                </div>
+                <div class="ibox-content">
+                    <h1 class="no-margins"><a href="#">{{ celery_num }}<span id="online_users"></span></a></h1>
+                    <div class="stat-percent font-bold text-navy"><i class="fa fa-level-up"></i></div>
+                    <!--<small>Online user</small>-->
+                    <small>Celery Work</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <span class="label label-primary pull-right">Assets</span>
+                    <h5>资产总数</h5>
+                </div>
+                <div class="ibox-content">
+                    <h1 class="no-margins"><a href="{% url 'asset_list' %}">{{ assets.count }}<span id="All assets"></span></a></h1>
+                    <div class="stat-percent font-bold text-danger"><i class="fa fa-level-down"></i></div>
+                    <small>Asset Collected</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="ibox float-e-margins">
+                <div id="pro_area_count" style="height:300px">
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3">
+            <div class="ibox float-e-margins">
+                <div id="pro_area_pie" style="height:300px">
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3" style="">
+            <div class="ibox-title">
+                <span>主机状态</span>
+            </div>
+            <div class="ibox-content" >
+                <div>
+                    <span>内存</span>
+                    <small class="pull-right">{{ mem_available }}/{{ mem_total }} MB</small>
+                </div>
+                <div class="progress progress-small">
+                    {% if mem_percent > 50 and mem_percent < 80 %}
+                        <div style="width: {{ mem_percent }}%;" class="progress-bar progress-bar-warning"></div>
+                    {% elif mem_percent > 80 %}
+                        <div style="width: {{ mem_percent }}%;" class="progress-bar progress-bar-danger"></div>
+                    {% else %}
+                        <div style="width: {{ mem_percent }}%;" class="progress-bar"></div>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <span>CPU</span>
+                    <small class="pull-right">{{ cpu_percent }}%</small>
+                </div>
+                <div class="progress progress-small">
+                    {% if cpu_percent > 50 and cpu_percent < 80 %}
+                        <div style="width: {{ cpu_percent }}%;" class="progress-bar progress-bar-warning"></div>
+                    {% elif cpu_percent > 80 %}
+                        <div style="width: {{ cpu_percent }}%;" class="progress-bar progress-bar-danger"></div>
+                    {% else %}
+                        <div style="width: {{ cpu_percent }}%;" class="progress-bar"></div>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <span>/data分区</span>
+                    <small class="pull-right">{{ disk_total }}GB</small>
+                </div>
+                <div class="progress progress-small">
+                    {% if disk_percent > 50 and disk_percent < 80 %}
+                        <div style="width: {{ disk_percent }}%;" class="progress-bar progress-bar-warning"></div>
+                    {% elif disk_percent > 80 %}
+                        <div style="width: {{ disk_percent }}%;" class="progress-bar progress-bar-danger"></div>
+                    {% else %}
+                        <div style="width: {{ disk_percent }}%;" class="progress-bar"></div>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <span>根分区</span>
+                    <small class="pull-right">{{ root_total }}GB</small>
+                </div>
+                <div class="progress progress-small">
+                    {% if root_percent > 50 and root_percent < 80 %}
+                        <div style="width: {{ root_percent }}%;" class="progress-bar progress-bar-warning"></div>
+                    {% elif root_percent > 80 %}
+                        <div style="width: {{ root_percent }}%;" class="progress-bar progress-bar-danger"></div>
+                    {% else %}
+                        <div style="width: {{ root_percent }}%;" class="progress-bar"></div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <br/>
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>最新动态</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            <i class="fa fa-wrench"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-user"></ul>
+                        <a class="close-link">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content ibox-heading">
+                    <h3><i class="fa fa-envelope-o"></i> 服务器登录记录 </h3>
+                    <small><i class="fa fa-map-marker"></i> 最近五条登录记录信息.</small>
+                </div>
+                <div class="ibox-content">
+                    <div class="feed-activity-list">
+                        {% if sshlog_10 %}
+                            {% for log in sshlog_10 %}
+                                <div class="feed-element">
+                                    <div>
+                                        <small class="pull-right">{{ log|get_log_time|naturaltime }}</small>
+                                        <strong>{{ log|get_username }}</strong>
+                                        <div>登录了:<a href="{% url 'log_list' %}list?ip={{ log }}">{{ log }}</a><br>执行了：{{ log|get_cmd_log }}</div>
+                                        <div>来源IP地址</div>
+                                        <small class="text-muted"><a href="{% url 'iplookup' %}?search={{ log|get_login_ip }}">{{ log|get_login_ip }}</a></small>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <p class="text-center">(暂无)</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>最近十次登录</h5>
+                    <div class="ibox-tools">
+                        <span class="label label-info-light">10 Messages</span>
+                       </div>
+                </div>
+                <div class="ibox-content ibox-heading">
+                    <h3><i class="fa fa-paper-plane-o"></i> 登录记录 </h3>
+                    <small><i class="fa fa-map-marker"></i> 最近十次登录记录. </small>
+                </div>
+                <div class="ibox-content">
+                    <div>
+                        <div class="feed-activity-list">
+                            {% if login_10 %}
+                                {% for login in login_10 %}
+                                    <div class="feed-element">
+                                        <a href="profile.html" class="pull-left">
+                                            <img alt="image" class="img-circle" src="/static/img/root.png">
+                                        </a>
+                                        <div class="media-body ">
+                                            {% ifequal login.is_finished 0 %}
+                                                <small class="pull-right text-navy">{{ login.last_login|naturaltime }}</small>
+                                            {% else %}
+                                                <small class="pull-right">{{ login.last_login|naturaltime }}</small>
+                                            {% endifequal %}
+                                            <strong>{{ login.name }}</strong> 登录了{{ login.host }} <br>
+                                            <small class="text-muted">{{ login.last_login }}</small><br>
+                                            <small class="text-muted">登陆IP: {{ login.name|get_user_login_ip }}</small>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                                <button id="show" class="btn btn-primary btn-block m-t"><i class="fa fa-arrow-down"></i> 更多 </button>
+                                <div id='more' style="display: none">
+                                    <br/>
+                                    <div class="feed-activity-list">
+                                        {% for login in login_more_10 %}
+                                            <div class="feed-element">
+                                                <a href="profile.html" class="pull-left">
+                                                    <img alt="image" class="img-circle" src="/static/img/root.png">
+                                                </a>
+                                                <div class="media-body ">
+                                                    {% ifequal login.is_finished 0 %}
+                                                        <small class="pull-right text-navy">{{ login.last_login|naturaltime }}</small>
+                                                    {% else %}
+                                                        <small class="pull-right">{{ login.last_login|naturaltime }}</small>
+                                                    {% endifequal %}
+                                                    <strong>{{ login.name }}</strong> 登录了{{ login.host }} <br>
+                                                    <small class="text-muted">{{ login.last_login|date:"Y-m-d H:i:s"   }}</small>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            {% else %}
+                                <p class="text-center">(暂无)</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>一周Top10用户</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            <i class="fa fa-wrench"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-user"></ul>
+                        <a class="close-link">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content ibox-heading">
+                    <h3><i class="fa fa-user"></i> 一周Top10用户 </h3>
+                    <small><i class="fa fa-map-marker"></i> 一周Top10用户操作次数及最近一次操作记录. </small>
+                </div>
+                <div class="ibox-content inspinia-timeline">
+                    {% if user_list %}
+                        {% for data in user_list %}
+                            <div class="timeline-item">
+                                <div class="row">
+                                    <div class="col-xs-5 date">
+                                        <i class="fa fa-info-circle"></i>
+                                        <strong>{{ data}}</strong>
+                                        <br/>
+                                        {% for k,v in count_dict.items %}
+                                            {% if k == data %}
+                                                {% for k,v in v.items %}
+                                                    {% if k == "count_num" %}
+                                                    <small class="text-navy">{{ v }}次</small>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                    <div class="col-xs-7 content no-top-border">
+                                        <p class="m-b-xs">最近一次操作</p>
+                                        {% for k,v in count_dict.items %}
+                                            {% if k == data %}
+                                                {% for k,v in v.items %}
+                                                    {% if k == "ip" %}
+                                                    <p>服务器:{{ v }}</p>
+                                                    {% endif %}
+                                                    {% if k == "log_type" %}
+                                                        <p>日志类型：{{ v }}</p>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            {% endif %}
+                                        {% endfor %}
+                                        {% for k,v in count_dict.items %}
+                                            {% if k == data %}
+                                                {% for k,v in v.items %}
+                                                    {% if k == "log_time" %}
+                                                    <p>于{{ v|print_time }}</p>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-center">(暂无)</p>
+                    {% endif %}
+                </div>
+        </div>
+    <!--</div>-->
+            <!--<div class="col-xm-6" id="top10" style="width:50%;height:400px;"></div>-->
+            <!--<div class="col-xm-6" id="usertop10" style="width:50%;height:400px;"></div>-->
+        <!--<div class="row">-->
+            <!--<div class="col-lg-6" id="hosttop10" style="width:50%;height:400px; margin-top: 20px"></div>-->
+        <!--</div>-->
+</div>
+</div>
+</div>
+<script>
+$(document).ready(function(){
+    $('#show').click(function(){
+        $('#show').css('display', 'none');
+        $('#more').css('display', 'block');
+    })
+});
+    function magic_number(value, id) {
+        var num = $("#"+id);
+        num.animate({count: value}, {
+            duration: 500,
+            step: function() {
+                num.text(String(parseInt(this.count)));
+            }
+        });
+    };
+    function update() {
+        $.getJSON('api/users/',  function(data) {
+            var users = data.users;
+            var hosts = data.hosts;
+            magic_number(users, 'name');
+            magic_number(hosts, 'email')
+        });
+    };
+    //setInterval(update, 5000); //5秒钟执行一次
+    //update();
+</script>
+<script>
+function drawChart(data) {
+    $('#pro_area_count').highcharts({
+
+        //colors: ['#1ab394', '#ed5565', '#90ed7d', '#233646'],
+
+        chart: {
+            type: 'column'
+        },
+
+        title: {
+            text: '项目地区服务器分布图'
+        },
+
+        xAxis: {
+            categories: [{% for name in area_list %} '{{ name }}', {% endfor %}]
+            //categories: ['国内', '台湾', '香港', '美国', '泰国']
+        },
+
+        yAxis: {
+            allowDecimals: false,
+            min: 0,
+            title: {
+                text: 'Number of fruits'
+            }
+        },
+
+        tooltip: {
+            formatter: function() {
+                return '<b>'+ this.x +'</b><br/>'+
+                    this.series.name +': '+ this.y +'<br/>'+
+                    'Total: '+ this.point.stackTotal;
+            }
+        },
+
+        plotOptions: {
+            column: {
+                stacking: 'normal'
+            }
+        },
+
+        series: data
+    });
+}
+$(function () {
+    $.ajax({
+      type: "POST",
+      url : "{% url 'highchart_api' %}",
+      data:{action:1},
+      dataType:"json",
+      success:function (data) {
+          drawChart(data);
+      }
+  });
+});
+</script>
+<script>
+function PieGradient(data){
+
+    // Radialize the colors
+    Highcharts.getOptions().colors = Highcharts.map(Highcharts.getOptions().colors, function (color) {
+        return {
+            radialGradient: {
+                cx: 0.5,
+                cy: 0.3,
+                r: 0.7
+            },
+            stops: [
+                [0, color],
+                [1, Highcharts.Color(color).brighten(-0.3).get('rgb')] // darken
+            ]
+        };
+    });
+
+
+    // Build the chart
+    $('#pro_area_pie').highcharts({
+        chart: {
+            plotBackgroundColor: null,
+            plotBorderWidth: null,
+            plotShadow: false,
+            type: 'pie'
+        },
+        title: {
+            text: '业务占比饼状图'
+        },
+        tooltip: {
+            pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+        },
+        plotOptions: {
+            pie: {
+                allowPointSelect: true,
+                cursor: 'pointer',
+                dataLabels: {
+                    enabled: true,
+                    format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+                    style: {
+                        color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                    },
+                    connectorColor: 'silver'
+                }
+            }
+        },
+        series: data
+    });
+}
+
+
+$(function () {
+    $.ajax({
+      type: "POST",
+      url : "{% url 'highchart_pie' %}",
+      data:{action:1},
+      dataType:"json",
+      success:function (data) {
+          PieGradient(data);
+      }
+  });
+});
+</script>
+{% endblock %}

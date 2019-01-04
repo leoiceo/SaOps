@@ -1,0 +1,28 @@
+<table class="table table-hover table-bordered">
+        <thead>
+            <th class="text-center">平台</th>
+            <th class="text-center">服务器地址</th>
+            <th class="text-center">服务器名</th>
+            <th class="text-center">数据库IP</th>
+            <th class="text-center">开始时间</th>
+            <th class="text-center">备份进度</th>
+            <th class="text-center">日志</th>
+        </thead>
+        <tbody>
+                {% for num in menu %}
+                    <tr class="text-center">
+                    <td>{{num.platform}}</td>
+                    <td>{{num.p_ip}}</td>
+                    <td>
+                        {{num.server_name}}
+                    </td>
+                    <td>{{num.db_ip}}</td>
+                    <td>{{num.backup_time|date:"Y-m-d H:i:s"}}</td>
+                    <td >
+                            <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width: {{num.status}}">{{num.status}}</div>
+                    </td>
+                    <td>{{num.log}}</td>
+                </tr>
+                {% endfor %}
+        </tbody>
+    </table>

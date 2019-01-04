@@ -1,0 +1,306 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block page-content %}
+{% include 'nav_cat_bar.html' %}
+{% load mytags %}
+
+<link href="/static/css/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet">
+<link href="/static/css/plugins/dataTables/dataTables.responsive.css" rel="stylesheet">
+<link href="/static/css/plugins/dataTables/dataTables.tableTools.min.css" rel="stylesheet">
+
+<div class="wrapper wrapper-content">
+<div class="row">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>游戏服管理</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            <i class="fa fa-wrench"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-user">
+                            <li><a href="#">未启用 1</a>
+                            </li>
+                            <li><a href="#">未启用 2</a>
+                            </li>
+                        </ul>
+                        <a class="close-link">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="ibox-content">
+                            <div class="row">
+                                <div class="col-sm-5 m-b-xs">
+                                    {% for k,v in inc_area_plat_info.items %}
+                                    <div class="btn-group">
+                                      <button type="button" class="btn btn-primary">{{k}}</button>
+                                      <button data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="btn btn-primary dropdown-toggle"><span class="caret"></span></button>
+                                      <ul class="dropdown-menu dropdown-menu-right">
+                                        {% for plat_name in v %}
+                                          <li><a href="?project={{project}}&area={{k}}&platform={{plat_name}}&game_type={{ game_type }}">{{plat_name}}</a></li>
+                                          <li class="divider"></li>
+                                        {% endfor %}
+                                      </ul>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+
+                            </div>
+                            <div class="table-responsive">
+                              <form id="contents_form" name="contents_form">
+                                <table class="table table-striped table-bordered table-hover dataTables-example" id="editable" name="editable">
+                                    <thead>
+                                    <tr>
+                                        <th class="text-center">编号</th>
+                                        <th class="text-center">地区</th>
+                                        <th class="text-center">平台类型</th>
+                                        <th class="text-center">服务器ID</th>
+                                        <th class="text-center">区服名</th>
+                                        <th class="text-center">公网</th>
+                                        <th class="text-center">内网IP</th>
+                                        <th class="text-center">数据库IP</th>
+                                        <th class="text-center">部署目录</th>
+                                        <th class="text-center">用途</th>
+                                        <th class="text-center">游戏端口 </th>
+                                        <th class="text-center">版本号</th>
+                                        <th class="text-center">最后监测时间</th>
+
+                                        <th class="text-center">区服状态</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for num in menu %}
+                                    <tr class="text-center" >
+                                        <td name="app_dir_id" value="{{num.app_dir}}+{{num.server_id}}" data-editable='false'>
+                                            {{forloop.counter}}.<input type="checkbox" data-toggle="checkbox" name="subcheck"   value={{num.p_ip}}+{{num.app_dir}}+{{num.server_id}}>
+                                        </td>
+                                        <td data-editable='false'>{{num.area.mini_name}}</td>
+                                        <td data-editable='false'>{{num.platform.mini_name}}</td>
+                                        <td name="server_id">{{num.server_id}}</td>
+                                        <td name="server_name">{{num.server_name}}</td>
+                                        <td data-editable='false'>{{num.p_ip}}</td>
+                                        <td data-editable='false'>{{num.s_ip}}</td>
+                                        <td data-editable='false'>{{num.db_ip}}</td>
+                                        <td name="app_dir">{{num.app_dir}}</td>
+                                        <td data-editable='false'>{{num.use}}</td>
+                                        <td name="game_port">{{num.game_port}}</td>
+                                        <td data-editable='false'>{{num.version}}</td>
+                                        {% ifequal num.check_time|date:"Y-m-d H:i:s"|status_diff 1 %}
+                                            <td data-editable='false'><font color="green">{{num.check_time|date:"Y-m-d H:i:s"}}</font></td>
+                                        {% else %}
+                                            <td data-editable='false'><font color="red">{{num.check_time|date:"Y-m-d H:i:s"}}</font></td>
+                                        {% endifequal %}
+
+                                        {% ifequal num.status 1%}
+                                            <td data-editable='false'><font color="green">{{num.status|gameserver_status}}</font></td>
+                                        {% else %}
+                                            <td data-editable='false'><font color="red">{{num.status|gameserver_status}}</font></td>
+                                        {% endifequal %}
+
+                                        </tr>
+                                        {% endfor %}
+                                        </tbody>
+
+                                        
+                                </table>
+                                <input id="checkall" type="checkbox" class="i-checks" name="checkall" value="checkall" data-editable='false' onclick="check_all('contents_form')">全选/全不选
+                                </form>
+                                <br>
+                            </div>
+
+                            <div class="hr-line-dashed"></div>
+                            <button type="button" class="btn btn-primary dim"  data-toggle="modal" data-target="#open-gameserver" data-whatever="@mdo" onclick="game_open()">开服</button>
+                            <button type="button" class="btn btn-danger dim"  data-toggle="modal" data-target="#close-gameserver" data-whatever="@mdo" onclick="game_close()">关服</button>
+                            <button type="button" class="btn btn-info dim"  data-toggle="modal" data-target="#backup-gameserver" data-whatever="@mdo" onclick="game_backup()">备份</button>
+                            <button type="button" id="alter_button"  class="btn btn-success dim" name="alter_button"  onclick="alter('contents_form')" >修改</button>
+                            <div class="pull-right">
+                            <button type="button" class="btn btn-info dim"  data-toggle="modal" data-target="#delete-gameserver" data-whatever="@mdo" onclick="game_delete()">删除记录</button>
+                            <button type="button" class="btn btn-warning dim"  data-toggle="modal" data-target="#del-gameserver" data-whatever="@mdo" onclick="game_del()">删除游戏服</button>
+                            <button type="button" class="btn btn-danger dim"  data-toggle="modal" data-target="#clear-gameserver" data-whatever="@mdo" onclick="game_clear()">游戏服停服清档</button>
+                            </div>
+
+<div class="modal fade" role="dialog" aria-labelledby="gridSystemModalLabel" id="open-gameserver">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="gridSystemModalLabel" align="center">开启游戏服</h4>
+      </div>
+      <div class="modal-body">
+        <div class="container-fluid" align="center">
+        <p id="open_list"></p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-success" name="switch" value="1" form="contents_form" formmethod="post" formaction="/inc/game_crontrol/?area={{area_name}}&platform={{platform}}">确定</button>
+        <button type="button" class="btn btn-info" data-dismiss="modal">关闭</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+<div class="modal fade" role="dialog" aria-labelledby="gridSystemModalLabel" id="close-gameserver">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="gridSystemModalLabel" align="center">关闭游戏服</h4>
+      </div>
+      <div class="modal-body">
+        <div class="container-fluid" align="center">
+        <p id="close_list"></p>
+        </div>
+      </div>
+      <div class="modal-footer">
+  <button type="submit" class="btn btn-success" name="switch" value="2" form="contents_form" formmethod="post" formaction="/inc/game_crontrol/?area={{area_name}}&platform={{platform}}">确定</button>
+        <button type="button" class="btn btn-info" data-dismiss="modal">关闭</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class="modal fade" role="dialog" aria-labelledby="gridSystemModalLabel" id="delete-gameserver">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="gridSystemModalLabel" align="center">删除记录</h4>
+      </div>
+      <div class="modal-body">
+        <div class="container-fluid" align="center">
+        <p id="delete_list"></p>
+        </div>
+      </div>
+      <div class="modal-footer">
+  <button type="submit" class="btn btn-success" name="switch" value="6" form="contents_form" formmethod="post" formaction="/inc/game_crontrol/?area={{area_name}}&platform={{platform}}">确定</button>
+        <button type="button" class="btn btn-info" data-dismiss="modal">关闭</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+<div class="modal fade" role="dialog" aria-labelledby="gridSystemModalLabel" id="del-gameserver">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h5 id="myModalLabel" align="center">
+                    <mark>删除线上服务器app目录和删除数据库,请注意备份!</mark>
+                </h5>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid" align="center">
+                    <p id="del_list"></p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-success" name="switch" value="3" form="contents_form" formmethod="post" formaction="/inc/game_crontrol/?area={{area_name}}&platform={{platform}}">确定</button>
+                <button type="button" class="btn btn-info" data-dismiss="modal">关闭</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+                <div class="modal fade" role="dialog" aria-labelledby="gridSystemModalLabel" id="clear-gameserver">
+                  <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h5 id="myModalLabel" align="center"><mark>清档游戏服</mark></h5>
+                      </div>
+                      <div class="modal-body">
+                        <div class="container-fluid" align="center">
+                        <p id="clear_list"></p>
+                        </div>
+                      </div>
+                      <div class="modal-footer">
+                  <button type="submit" class="btn btn-success" name="switch" value="4" form="contents_form" formmethod="post" formaction="/inc/game_crontrol/?area={{area_name}}&platform={{platform}}">确定</button>
+                        <button type="button" class="btn btn-info" data-dismiss="modal">关闭</button>
+                      </div>
+                    </div><!-- /.modal-content -->
+                  </div><!-- /.modal-dialog -->
+                </div><!-- /.modal -->
+
+
+                <div class="modal fade" role="dialog" aria-labelledby="gridSystemModalLabel" id="backup-gameserver">
+                  <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h5 id="myModalLabel" align="center">
+                            <mark>游戏服备份</mark>
+                        </h5>
+                      </div>
+                      <div class="modal-body">
+                        <div class="container-fluid" align="center">
+                        <p id="backup_list"></p>
+                        </div>
+                      </div>
+                  <div class="modal-footer">
+                    <button type="submit" class="btn btn-success" name="switch" value="5" form="contents_form" formmethod="post" formaction="/inc/game_crontrol/?area={{area_name}}&platform={{platform}}">确定</button>
+                    <button type="button" class="btn btn-info" data-dismiss="modal">关闭</button>
+                  </div>
+                    </div><!-- /.modal-content -->
+                  </div><!-- /.modal-dialog -->
+                </div><!-- /.modal -->
+
+                </div>
+           </div>
+        </div>
+    </div>
+</div>
+
+<script src="/static/js/plugins/dataTables/jquery.dataTables.js"></script>
+<script src="/static/js/plugins/dataTables/dataTables.bootstrap.js"></script>
+<script src="/static/js/plugins/dataTables/dataTables.responsive.js"></script>
+<script src="/static/js/plugins/dataTables/dataTables.tableTools.min.js"></script>
+
+
+
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('#editable').editableTableWidget({editor: $('<textarea>')});
+    });
+
+
+    function alter(form) {
+        selectData = GetTable();
+        console.log(selectData[0])
+        if (selectData[1] != 0) {
+            $.ajax({
+                type: "GET",
+                url: "{% url 'inc_gameinfo_edit' %}",
+                data: {"editable": selectData[0], "len_table": selectData[1]},
+                success: function (data) {
+                    alert("修改成功");
+                    window.open("/inc/game_info/?area={{area_name}}&platform={{platform}}", "_self");
+                error: window.open("/inc/game_info/?area={{area_name}}&platform={{platform}}", "_self");
+                }
+            });
+        }
+    }
+
+
+    $(document).ready(function() {
+            $('.dataTables-example').dataTable({
+                responsive: true,
+                "dom": 'T<"clear">lfrtip',
+                "iDisplayLength":50,
+                "tableTools": {
+                    "aButtons":["copy","xls",'print'],
+                    "sSwfPath": "/static/js/plugins/dataTables/swf/copy_csv_xls_pdf.swf"
+                }
+            });
+        });
+</script>
+
+{%endblock%}

@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block page-content %}
+{% include 'nav_cat_bar.html' %}
+{% load mytags %}
+
+<div class="wrapper wrapper-content">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>{{ header_title }}</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            <i class="fa fa-wrench"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-user">
+                            <li><a href="#">Config option 1</a>
+                            </li>
+                            <li><a href="#">Config option 2</a>
+                            </li>
+                        </ul>
+                        <a class="close-link">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="ibox-content">
+                    {% if error_log %}
+                        <div class="alert alert-danger text-center col-lg-10">{{ error_log }}</div>
+                    {% endif %}
+                    {% if log %}
+                        <div class="alert alert-success text-center col-lg-10">
+                            {{ log }}
+                        </div>
+                    {% else %}
+                        <div class="alert alert-warning text-center col-lg-10">
+                            {{ cdn_info|safe }}
+                        </div>
+                    {% endif %}
+                    <div class="col-sm-9 m-b-xs">
+                    {% for pro in cdn_pro_info %}
+                        <a type="button" class="btn btn-primary btn-sm" href="{% url 'cdn_url_update' %}?type={{ cdn_type }}&project={{ pro.mini_name }}">{{pro.name}}</a>
+                    {% endfor %}
+                    </div>
+                    <form id="UrlForm" method="post" class="form-horizontal">
+                        <div class="form-group">
+                            <div class="col-lg-10">
+                                <textarea class="comments" name="url_list"  class="form-control"></textarea>
+                            </div>
+                        </div>
+
+                    <div class="form-group">
+                        <div class="col-sm-2 col-sm-offset-4">
+{#                            <button type="submit" class="btn  btn-primary dim"  form="contents_form" formmethod="post" formaction="">提交</button>#}
+                            <button class="btn btn-primary" type="submit"> 提交 </button>
+                        </div>
+                    </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style type="text/css">
+.comments {
+    height: 280px;
+    width: 100%; /*自动适应父布局宽度*/
+    overflow: hidden;
+    word-break: break-all;
+}
+</style>
+<style>
+body .layui-layer-leoiceo .layui-layer-title{background:#18a689; color:#fff; border: none;}
+body .layui-layer-leoiceo .layui-layer-btn{border-top:1px solid #E9E7E7}
+body .layui-layer-leoiceo .layui-layer-btn a{background:#18a689;}
+body .layui-layer-leoiceo .layui-layer-btn .layui-layer-btn1{background:#999;}
+</style>
+
+<script src="/static/js/layer-v3.0.1/layer.js"></script>
+<script>
+$('#UrlForm').validator({
+    timely: 2,
+    theme: "yellow_right_effect",
+    rules:{
+        Url : /^http:\/\/[A-Za-z0-9]+\.[A-Za-z0-9]+[\/=\?%\-&_~`@[\]\’:+!]*([^<>\"\"])*$/,
+    },
+    fields: {
+        "url_list": {
+            rule: "required;Url",
+            tip:  "请填写url",
+            ok: "",
+            msg: {required: "必须填写!"}
+        },
+    },
+    valid: function (form) {
+        form.submit();
+    }
+})
+
+{% if log %}
+    update_log();
+{% endif %}
+
+function update_log(){
+    //layer.msg('提交成功');
+    layer.alert('提交成功', {
+            icon:1,
+            skin: 'layui-layer-leoiceo' //样式类名
+            ,closeBtn: 0
+        });
+}
+</script>
+{% endblock %}

@@ -1,0 +1,99 @@
+{% extends 'manager/help_index.html' %}
+
+{% load bootstrap %}
+{% block help-content %}
+
+<div class="col-lg-9 animated fadeInRight">
+    <div class="mail-box-header">
+        <h2>
+            编辑文档
+        </h2>
+    </div>
+    <div class="mail-box">
+       <!-- <div class="mail-body"> -->
+            <form id="ArticleForm" class="form-horizontal" method="post">
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">主题</label>
+
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control" name="name" value="{{ current_id.name }}">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">分类</label>
+                    <div class="col-sm-8">
+                        <select class="form-control" name="category">
+                            <option value="{{ current_id.category.id }}">{{ current_id.category }}</option>
+                            {% for num in category_info%}
+                            <option value="{{ num.id }}">{{ num.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">标签</label>
+                    <div class="col-sm-8">
+                        <select class="form-control" name="tag">
+                            <option value="{{ current_id.tag.id }}">{{ current_id.tag }}</option>
+                            {% for num in tag_info%}
+                            <option value="{{ num.id }}">{{ num.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            <!--    <div class="mail-text">
+                    <textarea id="summernote" name="content">{{ current_id.content }}</textarea>
+                </div>
+                -->
+                <div class="summernote">
+                    <textarea  name="content">{{ current_id.content }}</textarea>
+                </div>
+
+            </form>
+
+
+
+        <div class="mail-body text-right tooltip-demo">
+            <button type="submit" form="ArticleForm" formmethod="post" formaction="{% url 'help_edit' %}?id={{ current_id.category.id }}&action=save" class="btn btn-sm btn-primary"  title="保存" ><i class="fa fa-reply"></i> 保存</button>
+            <a type="button" class="btn btn-white btn-sm" href="{% url 'help_index' %}" title="放弃"><i class="fa fa-times"></i>放弃</a>
+        </div>
+
+    </div>
+</div>
+<link href="/static/css/plugins/summernote/summernote.css" rel="stylesheet">
+<link href="/static/css/plugins/summernote/summernote-bs3.css" rel="stylesheet">
+<script src="/static/js/plugins/summernote/summernote.min.js"></script>
+<script src="/static/js/plugins/summernote/summernote-zh-CN.js"></script>
+<script>
+        $(document).ready(function () {
+            function sendFile(file,editor,editable) {
+                data = new FormData();
+                data.append("file", file);
+                $.ajax({
+                    data: data,
+                    type: "POST",
+                    url: "/help/upload/", /*填写后台上传文件的路径*/
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    success: function (url) {/*url为上传成功后返回的图片路径*/
+                        editor.insertImage(editable, url);
+                    }
+                });
+            }
+            $('.summernote').summernote({
+                lang: 'zh-CN',
+                height: 220,
+                focus: false,
+                maxHeight: null,
+                minHeight: null,
+                onImageUpload: function (files, editor, $editable) {
+                    sendFile(files[0], editor, $editable);
+                },
+                codemirror: {
+                    theme: 'monokai'
+                }
+            });
+        });
+</script>
+{% endblock %}

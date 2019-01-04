@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block page-content %}
+{% include 'nav_cat_bar.html' %}
+
+<div class="wrapper wrapper-content">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>平台选择</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            <i class="fa fa-wrench"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-user">
+                            <li><a href="#">Config option 1</a>
+                            </li>
+                            <li><a href="#">Config option 2</a>
+                            </li>
+                        </ul>
+                        <a class="close-link">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="ibox-content">
+                    <div class="row">
+                        <div class="col-sm-4 m-b-xs">
+                            {% for num in area_info %}
+                            <a  class="btn btn-primary btn-write" href="?area={{num}}"> {{num}}</a>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <form id="nameform" onsubmit="return check_platform();">
+                            <table class="table table-hover table-bordered">
+                                <thead>
+                                  <th class="text-center">编号</th>
+                                  <th class="text-center">平台</th>
+                                </thead>
+
+                                <tbody>
+                                    {% for platform in plat_list %}
+                                    <tr class="text-center">
+                                        <td>
+                                          <input type="radio" data-toggle="radio" name="platform"   value={{platform}}>
+                                        </td>
+                                        <td>{{platform}}</td>
+                                    </tr>
+                                      {% endfor %}
+                                </tbody>
+                            </table>
+                        </form>
+                    </div>
+                    <div class="hr-line-dashed"></div>
+
+                     <button type="submit" class="btn btn-primary dim"  form="nameform" formmethod="post" formaction="/inc/update_config_info/?area={{area_name}}" >确定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+  function check_platform(){
+    var test = $('input[name="platform"]:checked').val();
+    if (test=="undefined"||test==null){
+        alert("请选择平台!");
+        return false;
+    }
+  }
+</script>
+
+{% endblock %}

@@ -1,0 +1,50 @@
+<li class="nav-header">
+
+    <div class="dropdown profile-element">
+
+        <span>
+
+            <img alt="image" class="img-circle" width="48" height="48" src="/static/img/profile_small.jpg" />
+
+        </span>
+
+        <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+
+            <span class="clear">
+
+                <span class="block m-t-xs">
+
+                    <strong class="font-bold">{{ user.name }}  <span style="color: #8095a8"></span></strong>
+
+                </span>
+
+                <span class="text-muted text-xs block">
+
+                     信息<b class="caret"></b>
+
+                </span>
+
+            </span>
+
+        </a>
+
+        <ul class="dropdown-menu animated fadeInRight m-t-xs">
+
+            <li id="admin"><a href="/admin/" target="_blank">管理后台</a></li>
+{#            {% ifequal user.is_admin 1 %}#}
+{#            <li id="monitor"><a href="http://monitor:redhat@{{ monitor_url }}/" target="_blank">监控系统</a></li>#}
+{#            {% endifequal %}#}
+            <li id="monitor">
+                <a href="http://{{ monitor_url }}" class="a_post">监控平台</a>
+            </li>
+            <li id="manager"><a href="{% url 'user_eye' %}?user_id={{ user.id }}">我的信息</a></li>
+            <li id="personal"><a href="{% url 'personal' %}">修改密码</a></li>
+            <li class="divider"></li>
+            <li><a href="/logout/">注销</a></li>
+        </ul>
+    </div>
+    <div class="logo-element">
+        JS+
+    </div>
+</li>
+

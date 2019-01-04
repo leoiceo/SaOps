@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block page-content %}
+{% include 'nav_cat_bar.html' %}
+
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>新服安装</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            <i class="fa fa-wrench"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-user">
+                            <li><a href="#">未启用 1</a>
+                            </li>
+                            <li><a href="#">未启用 2</a>
+                            </li>
+                        </ul>
+                        <a class="close-link">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="ibox-content">
+                <pre>
+                    <div id="txtHint">
+                        <p align="center">--------------------------装服日志----------------------</p>
+正在安装{{gameserver}}
+{{cmd_out}}
+<br>
+
+                    </div>
+                </pre>
+
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+function loadXMLDoc()
+{
+var xmlhttp;
+if (window.XMLHttpRequest)
+        {
+        xmlhttp=new XMLHttpRequest();
+        }
+else
+        {
+        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+        }
+xmlhttp.onreadystatechange=function()
+        {
+        if (xmlhttp.readyState==4 && xmlhttp.status==200)
+                {
+                document.getElementById("txtHint").innerHTML=xmlhttp.responseText;
+                }
+        }
+xmlhttp.open("GET","/inc/inc_process_status/?gameserver={{gameserver}}&action=1",true);
+xmlhttp.send()
+}
+</script>
+<SCRIPT LANGUAGE="JavaScript">
+function CountDown()
+{
+        loadXMLDoc();
+}
+ timer = setInterval("CountDown()",5000);
+</SCRIPT>
+{%endblock%}

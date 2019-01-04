@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block page-content %}
+{% include 'nav_cat_bar.html' %}
+
+<div class="wrapper wrapper-content">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>{{ area_name }} - {{ platform }} - <b>zone_list.ini</b> </h5>
+                    <div class="ibox-tools">
+                    <a class="collapse-link">
+                        <i class="fa fa-chevron-up"></i>
+                    </a>
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                        <i class="fa fa-wrench"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-user">
+                        <li><a href="#">未启用 1</a>
+                        </li>
+                        <li><a href="#">未启用 2</a>
+                        </li>
+                    </ul>
+                    <a class="close-link">
+                        <i class="fa fa-times"></i>
+                    </a>
+                    </div>
+                </div>
+
+                <div class="ibox-content">
+                    <div class="row">
+
+                    </div>
+                    <div class="table-responsive">
+                        <pre>{{ cmd_result }}</pre>
+                    </div>
+
+                    <div>
+                        <form id="nameform">
+                            <div class="input-group col-xs-5 has-success">
+                                 <span class="input-group-addon">当前推送路径</span>
+                                 <input type="text" name="senddir" class="form-control" placeholder="" value={{dirname}}>
+                            </div><br>
+                        </form>
+                        <button type="submit" class="btn btn-primary dim"  form="nameform" formmethod="post" formaction="/inc/zone_list_send/?platform={{platform}}&area={{area_name}}" >推送到GAMELIST服务器</button>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

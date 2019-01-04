@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block page-content %}
+{% include 'nav_cat_bar.html' %}
+
+<div class="wrapper wrapper-content animated fadeInRight">
+        <div class="row">
+            <div class="col-lg-10">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>修改发行商信息</h5>
+                        <div class="ibox-tools">
+                            <a class="collapse-link">
+                                <i class="fa fa-chevron-up"></i>
+                            </a>
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                <i class="fa fa-wrench"></i>
+                            </a>
+                            <ul class="dropdown-menu dropdown-user">
+                                <li><a href="#">未启用 1</a>
+                                </li>
+                                <li><a href="#">未启用 2</a>
+                                </li>
+                            </ul>
+                            <a class="close-link">
+                                <i class="fa fa-times"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="ibox-content">
+                        {% for idc in idc_info %}
+                        <form method="post" id="idcForm" class="form-horizontal" action="">
+                            {% if info %}
+                                <div class="alert alert-success text-center">{{ info }}</div>
+                            {% endif %}
+                            <div class="form-group">
+                                <label for="idc_name" class="col-sm-2 control-label">发行商名称<span class="red-fonts">*</span></label>
+                                <div class="col-sm-8">
+                                    <input id="idc_name" name="idc_name" placeholder="发行商名称" type="text" class="form-control" value="{{idc.idc_name}}" >
+                                    <input id="idc_id" name="idc_id" style="display:none;" type="text" class="form-control" value="{{idc.id}}" >
+                                </div>
+                            </div>
+                            <div class="hr-line-dashed"></div>
+                            <div class="form-group">
+                                <label for="name" class="col-sm-2 control-label">简称<span class="red-fonts">*</span></label>
+                                <div class="col-sm-8">
+                                    <input id="idc_mini" name="idc_mini" placeholder="简称" type="text" class="form-control" value="{{idc.mini_name}}" >
+                                </div>
+                            </div>
+                            <div class="hr-line-dashed"></div>
+                            <div class="form-group">
+                                <label for="name" class="col-sm-2 control-label">机房线路</label>
+                                <div class="col-sm-8">
+                                    <input id="net_line" name="net_line" placeholder="机房线路" type="text" class="form-control" value="{{idc.net_line}}" >
+                                </div>
+                            </div>
+                            <div class="hr-line-dashed"></div>
+                            <div class="form-group">
+                                <label for="name" class="col-sm-2 control-label">机房带宽</label>
+                                <div class="col-sm-8">
+                                    <input id="bandwidth" name="bandwidth" placeholder="机房带宽" type="text" class="form-control" value="{{idc.bandwidth}}" >
+                                </div>
+                            </div>
+                            <div class="hr-line-dashed"></div>
+                            <div class="form-group">
+                                <label for="name" class="col-sm-2 control-label">联系人</label>
+                                <div class="col-sm-8">
+                                    <input id="linkman" name="linkman" placeholder="联系人" type="text" class="form-control" value="{{idc.linkman}}" >
+                                </div>
+                            </div>
+                            <div class="hr-line-dashed"></div>
+                            <div class="form-group">
+                                <label for="name" class="col-sm-2 control-label">联系电话</label>
+                                <div class="col-sm-8">
+                                    <input id="phone" name="phone" placeholder="联系电话" type="text" class="form-control" value="{{idc.phone}}" >
+                                </div>
+                            </div>
+                            <div class="hr-line-dashed"></div>
+                            <div class="form-group">
+                                <label for="name" class="col-sm-2 control-label">备注</label>
+                                <div class="col-sm-8">
+                                    <input id="comment" name="comment" placeholder="备注" type="text" class="form-control" value="{{idc.comment}}" >
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-4 col-sm-offset-2">
+                                <button id="submit_button"  class="btn btn-warning" type="submit">保存</button>
+                                <a type="button" class="btn btn-primary" href="{% url 'idc_list' %}">返回</a>
+                                </div>
+                            </div>
+                        </form>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+$('#idcForm').validator({
+    timely: 2,
+    theme: "yellow_right_effect",
+    rules: {
+        check_ip: [/^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])(\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])){3}$/, 'ip地址不正确'],
+        check_port: [/^\d{1,5}$/, '端口号不正确'],
+        type_m: function(element){
+                    return  $("#M").is(":checked");
+            }
+    },
+        "idc_name": {
+            rule: "required",
+            tip: "机房名称",
+            ok: "",
+            msg: {required: "必须填写"}
+        },
+        "idc_mini": {
+            rule: "required",
+            tip: "机房简称",
+            ok: "",
+            msg: {required: "必须填写"}
+        },
+    },
+    valid: function(form) {
+        form.submit();
+    }
+});
+
+</script>
+{% endblock %}

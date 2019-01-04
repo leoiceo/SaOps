@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block page-content %}
+{% include 'nav_cat_bar.html' %}
+{% load bootstrap %}
+<link href="/static/css/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet">
+<link href="/static/css/plugins/dataTables/dataTables.responsive.css" rel="stylesheet">
+<link href="/static/css/plugins/dataTables/dataTables.tableTools.min.css" rel="stylesheet">
+
+<div class="wrapper wrapper-content">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>{{ tip }}</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            <i class="fa fa-wrench"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-user">
+                            <li><a href="#">未启用 1</a>
+                            </li>
+                            <li><a href="#">未启用 2</a>
+                            </li>
+                        </ul>
+                        <a class="close-link">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="ibox-content">
+                    <div class="row">
+                      <div class="col-sm-4 m-b-xs">
+                          <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#idc_add"><i class="icon-cogs"></i>增加</button>
+                      </div>
+                    </div>
+                    {% if error %}
+                        <div class="alert alert-warning text-center">{{ error }}</div>
+                    {% endif %}
+                    {% if add_info %}
+                        <div class="alert alert-success text-center">{{ add_info }}</div>
+                    {% endif %}
+                    <table class="table table-striped table-bordered table-hover dataTables-example">
+                          <thead>
+                            <th class="text-center">项目</th>
+                            <th class="text-center">仓库名</th>
+                            <th class="text-center">类型</th>
+                            <th class="text-center">地址</th>
+                            <th class="text-center">用户名</th>
+                            <th class="text-center">密码</th>
+                            <th class="text-center">操作</th>
+                          </thead>
+                          <tbody>
+                            {% for num in repos_info %}
+                              <tr class="text-center">
+                                <td>{{num.project.name}}</td>
+                                <td>{{num.repos_name}}</td>
+                                <td>{{num.get_repos_type_display}}</td>
+                                <td>{{num.repos_addr}}</td>
+                                <td>{{num.repos_user}}</td>
+                                <td>{{num.repos_pass}}</td>
+                                <td>
+                                    <a href="{% url 'repos_edit' %}?id={{num.id}}"><span class="glyphicon glyphicon-pencil"></span></a>
+                                    &nbsp;&nbsp;
+                                    <a href="{% url 'repos_list' %}?id={{num.id}}&action=delete"><span style="color:red" class="glyphicon glyphicon-trash" onclick="return confirm('确认删除吗？')"></span></a>
+                                </td>
+                              </tr>
+                            {% endfor %}
+                          </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="idc_add" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="exampleModalLabel" align="center">添加发布仓库信息</h4>
+      </div>
+        <div class="modal-body">
+            <form id="ReposManagerForm" method="post" class="form-horizontal">
+                {{ af.repos_name|bootstrap_horizontal }}
+                {{ af.project|bootstrap_horizontal }}
+                {{ af.repos_type|bootstrap_horizontal }}
+                {{ af.repos_addr|bootstrap_horizontal }}
+                {{ af.repos_user|bootstrap_horizontal }}
+                {{ af.repos_pass|bootstrap_horizontal }}
+            </form>
+        </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+        <button type="submit" class="btn btn-primary" form="ReposManagerForm" formmethod="post" formaction="{% url 'repos_list' %}" name="action" value="add">确定</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="/static/js/plugins/dataTables/jquery.dataTables.js"></script>
+<script src="/static/js/plugins/dataTables/dataTables.bootstrap.js"></script>
+<script src="/static/js/plugins/dataTables/dataTables.responsive.js"></script>
+<script src="/static/js/plugins/dataTables/dataTables.tableTools.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+            $('.dataTables-example').dataTable({
+                responsive: true,
+                "dom": 'T<"clear">lfrtip',
+                "iDisplayLength":10,
+                "tableTools": {
+                    "aButtons":["copy","xls",'print'],
+                    "sSwfPath": "/static/js/plugins/dataTables/swf/copy_csv_xls_pdf.swf"
+                }
+            });
+        });
+
+</script>
+
+{%endblock%}

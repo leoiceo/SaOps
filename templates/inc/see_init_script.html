@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block page-content %}
+{% include 'nav_cat_bar.html' %}
+
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-lg-13">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>服务器初始化脚本</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            <i class="fa fa-wrench"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-user">
+                            <li><a href="#">未启用 1</a>
+                            </li>
+                            <li><a href="#">未启用 2</a>
+                            </li>
+                        </ul>
+                        <a class="close-link">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="ibox-content">
+
+                    <form id="server_init_form">
+<textarea id="code1" name="code_text">
+{{info}}
+</textarea>
+                  </form>
+                    <button type="submit" class="btn btn-success" form="server_init_form" formmethod="post" formaction="/inc/see_init_script/?project={{project}}&area={{area_name}}&action=save" >保存脚本</button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+              
+<script>
+         $(document).ready(function(){
+
+             var editor_one = CodeMirror.fromTextArea(document.getElementById("code1"), {
+                 lineNumbers: true,
+                 matchBrackets: true,
+                 styleActiveLine: true,
+                 theme:"ambiance"
+             });
+
+
+        });
+    </script>
+
+
+
+{% endblock %}

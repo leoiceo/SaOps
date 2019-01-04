@@ -1,0 +1,197 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block page-content %}
+{% include 'nav_cat_bar.html' %}
+{% load mytags %}
+<div class="wrapper wrapper-content">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>任务计划详细信息</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            <i class="fa fa-wrench"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-user">
+                            <li><a href="#">Config option 1</a>
+                            </li>
+                            <li><a href="#">Config option 2</a>
+                            </li>
+                        </ul>
+                        <a class="close-link">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="ibox-content">
+                <div>
+                    <div class="text-left">
+                        {% for num in menu %}
+                        <table class="table">
+                            <tr>
+                                <td class="text-navy">项目</td>
+                                <td>{{ num.project }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-navy">任务名称</td>
+                                <td>{{ num.name }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-navy">脚本名称</td>
+                                <td>{{ num.script_name }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-navy">定时表达式</td>
+                                <td>{{ num.crontab }}<td>
+                            <tr>
+                                <td class="text-navy">创建时间</td>
+                                <td>{{num.create_date|date:"Y-m-d H:i:s"}}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-navy">创建人</td>
+                                <td>{{ num.create_user }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-navy">修改时间</td>
+                                <td>{{ num.date_changed|date:"Y-m-d H:i:s"}}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-navy">修改人</td>
+                                <td>{{ num.motify_user }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-navy">已执行次数</td>
+                                <td>{{ num.total_run_count }}</td>
+                            </tr>
+
+                            <tr>
+                                <td class="text-navy">状态</td>
+                                <td>
+                                    {% if num.enabled %}
+                                        <font color="green">已启用</font>
+                                    {% else %}
+                                        <font color="red">已停止</font>
+                                    {% endif %}
+                                </td>
+                            </tr>
+
+
+                        </table>
+                        {% endfor %}
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>执行历史</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            <i class="fa fa-wrench"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-user">
+                            <li><a href="#">Config option 1</a>
+                            </li>
+                            <li><a href="#">Config option 2</a>
+                            </li>
+                        </ul>
+                        <a class="close-link">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="ibox-content">
+                    <table class="table table-striped table-bordered table-hover dataTables-example">
+                        <thead>
+                            <th class="text-center">项目</th>
+                            <th class="text-center">脚本名</th>
+                            <th class="text-center">IP</th>
+                            <th class="text-center">日志</th>
+                            <th class="text-center">返回结果</th>
+                            <th class="text-center">执行时间</th>
+                        </thead>
+                        <tbody>
+                            {% for num in plan_info %}
+                                <tr class="text-center">
+                                    <td>{{num.project.mini_name}}</td>
+                                    <td>{{num.script_name}}</td>
+                                    <td>{{num.ip}}</td>
+                                    <td>{{num.log}}</td>
+                                    <td><a data-toggle="modal" data-target="#display_result_{{num.id}}">查看结果</a></td>
+                                    <td>{{num.run_time|print_time}}</td>
+                                </tr>
+
+                                 <div class="modal fade" role="dialog" aria-labelledby="gridSystemModalLabel" id="display_result_{{num.id}}">
+                                      <div class="modal-dialog modal-lg" role="document">
+                                        <div class="modal-content">
+                                          <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                            <h4 class="modal-title" id="gridSystemModalLabel" align="center">{{ num.ip }} 执行 {{ num.script_name }} 返回结果详细信息</h4>
+                                          </div>
+                                          <div class="modal-body">
+                                            <div class="container-fluid" align="pull-left">
+                                               <pre style="color:green;">{{ num.result|get_data_log }}</pre>
+                                               <pre style="color:red;">{{ num.result|get_error_log }}</pre>
+{#                                                <textarea id="code1">{{ num.result }}</textarea>#}
+                                            </div>
+                                          </div>
+                                        </div><!-- /.modal-content -->
+                                      </div><!-- /.modal-dialog -->
+                                </div><!-- /.modal -->
+
+                            {% endfor %}
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('#editable').editableTableWidget({editor: $('<textarea>')});
+       });
+</script>       
+
+
+<script src="/static/js/plugins/dataTables/jquery.dataTables.js"></script>
+<script src="/static/js/plugins/dataTables/dataTables.bootstrap.js"></script>
+<script src="/static/js/plugins/dataTables/dataTables.responsive.js"></script>
+<script src="/static/js/plugins/dataTables/dataTables.tableTools.min.js"></script>
+
+<link href="/static/css/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet">
+<link href="/static/css/plugins/dataTables/dataTables.responsive.css" rel="stylesheet">
+<link href="/static/css/plugins/dataTables/dataTables.tableTools.min.css" rel="stylesheet">
+
+<script type="text/javascript">
+    $(document).ready(function() {
+            $('.dataTables-example').dataTable({
+                responsive: true,
+                "dom": 'T<"clear">lfrtip',
+                "iDisplayLength":10,
+                "tableTools": {
+                    "aButtons":["copy","xls",'print'],
+                    "sSwfPath": "/static/js/plugins/dataTables/swf/copy_csv_xls_pdf.swf"
+                }
+            });
+        });
+</script>
+
+{% endblock %}

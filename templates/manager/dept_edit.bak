@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block page-content %}
+{% include 'nav_cat_bar.html' %}
+
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-lg-10">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5> 部门授权编辑 </h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            <i class="fa fa-wrench"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-user">
+                            <li><a href="#">未启用 1</a>
+                            </li>
+                            <li><a href="#">未启用 2</a>
+                            </li>
+                        </ul>
+                        <a class="close-link">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <select id="users_total" name="users" class="form-control m-b" size="12" multiple style="display: none">
+                    {% for user in users %}
+                        <option value="{{ user.id }}">{{ user.name }}</option>
+                    {% endfor %}
+                </select>
+
+                <select id="users_select_total" name="users_select" class="form-control m-b" size="12"  multiple style="display: none">
+                    {% for user in users_select %}
+                    <option value="{{ user.id }}">{{ user.name }}</option>
+                    {% endfor %}
+                </select>
+
+                <div class="ibox-content">
+                    <form id="sudoPerm" method="post" class="form-horizontal" action="">
+                        {% if error %}
+                            <div class="alert alert-warning text-center">{{ error }}</div>
+                        {% endif %}
+                        {% if msg %}
+                            <div class="alert alert-success text-center">{{ msg }}</div>
+                        {% endif %}
+                        <div class="row">
+                            <div class="form-group">
+                                <label for="group_name" class="col-sm-2 control-label">部门</label>
+                                <div class="col-sm-8">
+                                    <input id="dept_id" name="dept_id"  type="text" class="form-control" value="{{ dept_id }}" style="display: none">
+                                    <input id="dept_name" name="dept_name"  type="text" class="form-control" value="{{ dept_name }}" readonly>
+                                </div>
+                            </div>
+
+                            <div class="hr-line-dashed"></div>
+
+                            <div class="form-group">
+                                <label for="group_name" class="col-sm-2 control-label">过滤</label>
+                                <div class="col-sm-4">
+                                    <input id="noselect" class="form-control" oninput="search_ip(this.value, 'users', 'users_total')">
+                                </div>
+                                <div class="col-sm-1">
+                                </div>
+                                <div id="select" class="col-sm-3">
+                                    <input  class="form-control" oninput="search_ip(this.value, 'users_select', 'users_select_total')">
+                                </div>
+                            </div>
+
+
+                            <div class="form-group">
+                                <label for="" class="col-sm-2 control-label">用户<span class="red-fonts">*</span></label>
+                                <div class="col-sm-4">
+                                    <div>
+                                        <select id="users" name="users" class="form-control m-b" size="12" multiple>
+                                            {% for user in users %}
+                                            <option value="{{ user.id }}">{{ user.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-1">
+                                    <div class="btn-group" style="margin-top: 60px;">
+                                        <button type="button" class="btn btn-white" onclick="move('users', 'users_select', 'users_total', 'users_select_total'  )"><i class="fa fa-chevron-right"></i></button>
+                                        <button type="button" class="btn btn-white" onclick="move('users_select', 'users', 'users_select_total', 'users_total')"><i class="fa fa-chevron-left"></i> </button>
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-3">
+                                    <div>
+                                        <select id="users_select" name="users_select" class="form-control m-b" size="12"  multiple>
+                                            {% for user in user_info %}
+                                            <option value="{{ user.id }}">{{ user.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="form-group">
+                                <div class="col-sm-4 col-sm-offset-2">
+                                    <button class="btn btn-white" type="reset">取消</button>
+                                    <button id="submit_button" class="btn btn-primary" onclick="return confirm('确认保存吗？')" type="submit">确认保存</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script >
+    $(document).ready(function(){
+        $("#submit_button").click(function(){
+            $('#users_select option').each(function(){
+                $(this).prop('selected', true)
+        })
+    })
+});
+</script>
+
+{% endblock %}

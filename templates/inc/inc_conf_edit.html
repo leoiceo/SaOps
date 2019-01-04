@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block page-content %}
+{% include 'nav_cat_bar.html' %}
+
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>{{ area_name }}/{{ plat_name }}/{% ifequal game_type "qc" %}测试服{% else %}正式服{% endifequal %}的配置文件管理</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            <i class="fa fa-wrench"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-user">
+                            <li><a href="#">未启用 1</a>
+                            </li>
+                            <li><a href="#">未启用 2</a>
+                            </li>
+                        </ul>
+                        <a class="close-link">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <div class="container-fluid">
+                      <div class="row-fluid">
+                        <div class="span12">
+                          <div class="tabbable" id="tabs-978865">
+                            <ul class="nav nav-tabs">
+                              <li class="active">
+                                <a href="#panel-833552" data-toggle="tab">gameserver.start</a>
+                              </li>
+                              <li>
+                                <a href="#panel-29219" data-toggle="tab">dbserver.start</a>
+                              </li>
+
+                              <li>
+                                <a href="#panel-29220" data-toggle="tab">bfserver.start.0</a>
+                              </li>
+                              <li>
+                                <a href="#panel-29221" data-toggle="tab">mysql.db.start</a>
+                              </li>
+
+                            </ul>
+                            <div class="tab-content">
+                              <div class="tab-pane active" id="panel-833552">
+                                <form id="gameserver-form">
+<table>
+<textarea class="form-control" rows="30" style="background-color: #F3F3F4" type="text" name="gameserver">
+{{gameserver_cfg}}
+</textarea>
+</table>
+                                </form>
+                                   <div class="hr-line-dashed"></div>
+                                <button type="submit" class="btn btn-primary dim" name="switch" form="gameserver-form" formmethod="post" formaction="/inc/inc_conf_edit/?&area={{ area_name }}&platform={{ plat_name }}&game_type={{ game_type }}">更新</button>
+                              </div>
+
+                              <div class="tab-pane" id="panel-29219">
+                                <form id="dbserver-form">
+<table>
+<textarea  class="form-control" rows="30" style="background-color: #F3F3F4" name="dbserver">
+{{dbserver_cfg}}
+</textarea>
+</table>
+                                </form>
+                                   <div class="hr-line-dashed"></div>
+                                <button type="submit" class="btn btn-primary dim" name="switch" form="dbserver-form" formmethod="post" formaction="/inc/inc_conf_edit/?&area={{ area_name }}&platform={{ plat_name }}&game_type={{ game_type }}">更新</button>
+                              </div>
+
+
+
+                              <div class="tab-pane" id="panel-29220">
+                                <form id="bfserver-form">
+<table>
+<textarea  class="form-control" rows="30" style="background-color: #F3F3F4" name="bfserver">
+{{bfserver_cfg}}
+</textarea>
+</table>
+                                </form>
+                                   <div class="hr-line-dashed"></div>
+                                <button type="submit" class="btn btn-primary dim" name="switch" form="bfserver-form" formmethod="post" formaction="/inc/inc_conf_edit/?&area={{ area_name }}&platform={{ plat_name }}&game_type={{ game_type }}">更新</button>
+                              </div>
+
+                            <div class="tab-pane" id="panel-29221">
+                                <form id="mysql-form">
+<table>
+<textarea  class="form-control" rows="30" style="background-color: #F3F3F4" name="mysqlcfg">
+{{mysql_cfg}}
+</textarea>
+</table>
+                                </form>
+                                <div class="hr-line-dashed"></div>
+                                <button type="submit" class="btn btn-primary dim" name="switch" form="mysql-form" formmethod="post" formaction="/inc/inc_conf_edit/?&area={{ area_name }}&platform={{ plat_name }}&game_type={{ game_type }}">更新</button>
+                            </div>
+
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{%  endblock %}

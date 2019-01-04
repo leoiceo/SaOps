@@ -1,0 +1,68 @@
+{% load mytags %}
+<form action="" >
+    <table class="table table-hover table-bordered">
+        <thead>
+            <th class="text-center">项目</th>
+            <th class="text-center">目标IP</th>
+            <th class="text-center">命令</th>
+            <th class="text-center">状态</th>
+            <th class="text-center">日志信息</th>
+            <th class="text-center">返回结果</th>
+{#            <th class="text-center">开始时间</th>#}
+{#            <th class="text-center">结束时间</th>#}
+            <th class="text-center">执行时间</th>
+            <th class="text-center">操作人</th>
+        </thead>
+        <tbody>
+            {% for num in status_info %}
+            <tr class="text-center">
+                <td>{{num.project}}</td>
+                <td>{{num.p_ip}}</td>
+                <td>{{num.cmd}}</td>
+                <td>
+                    <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width: {{num.status}}">{{num.status}}</div>
+                </td>
+            {% if num.log == "执行异常" %}
+                <td style="color: red">{{num.log}}</td>
+            {% else %}
+                <td>{{num.log|safe}}</td>
+            {% endif %}
+                <td><a data-toggle="modal" data-target="#display_result_{{num.id}}" onclick="timer=window.clearInterval(timer)">查看结果</a></td>
+{#                <td>{{num.start_time| print_time }}</td>#}
+{#                {% ifequal num.end_time None %}#}
+{#                    <td>执行中</td>#}
+{#                {% else %}#}
+{#                    <td>{{num.end_time| print_time }}</td>#}
+{#                {% endifequal %}#}
+                <td>{{ num.total_time }}s</td>
+                <td>{{num.operator}}</td>
+            </tr>
+            <tr>
+                <td colspan="8">
+                    {% if num.result == "None" %}
+                        <pre>执行中...请稍候</pre>
+                    {% else %}
+                        <pre style="border: 0;">{{ num.result|get_data_log }}</pre>
+                    {% endif %}
+                </td>
+            </tr>
+            <div class="modal fade" role="dialog" aria-labelledby="gridSystemModalLabel" id="display_result_{{num.id}}">
+              <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="gridSystemModalLabel" align="center">{{ num.p_ip }} 执行 {{ num.cmd }} 返回结果详细信息</h4>
+                  </div>
+                  <div class="modal-body">
+                    <div class="container-fluid" align="pull-left">
+                        <pre style="color:green;">{{ num.result|get_data_log }}</pre>
+                        <pre style="color:red;">{{ num.result|get_error_log }}</pre>
+                    </div>
+                  </div>
+                </div><!-- /.modal-content -->
+              </div><!-- /.modal-dialog -->
+            </div><!-- /.modal -->
+            {% endfor %}
+        </tbody>
+    </table>
+</form>

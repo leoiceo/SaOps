@@ -1,0 +1,8 @@
+# 默认 queue
+python manage.py celery worker -Q celery
+# 高优先级 queue. 10个 workers
+python manage.py celery worker -Q high -c 10
+# 低优先级 queue. 2个 workers
+python manage.py celery worker -Q low -c 2
+# Beat 进程
+python manage.py celery beat

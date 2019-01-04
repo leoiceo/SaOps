@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block page-content %}
+{% include 'nav_cat_bar.html' %}
+{% load mytags %}
+
+<div class="wrapper wrapper-content">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>{{ area_name }}-白名单管理</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            <i class="fa fa-wrench"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-user">
+                            <li><a href="#">Config option 1</a>
+                            </li>
+                            <li><a href="#">Config option 2</a>
+                            </li>
+                        </ul>
+                        <a class="close-link">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <div class="row">
+
+                    </div>
+
+
+<pre>
+{{cmd_result}}
+</pre>
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="pull-left">
+                        <h4>请选择本次公告和白名单推送平台</h4>
+                    </div>
+                    <div class="pull-right">
+                        <a onclick="fnClickAddRow();" href="javascript:void(0);" class="btn btn-primary ">添加推送路径</a>
+                    </div>
+                    <form id="contents_form" name="contents_form" onsubmit="return check_platform();">
+                        <table class="table table-striped table-bordered table-hover" id="editable" name="editable">
+                            <thead>
+                                <th class="text-center"><input id="checkall" type="checkbox" class="i-checks" name="checkall" value="checkall" data-editable='false' onclick="check_all('contents_form')"></th>
+                                <th class="text-center">地区</th>
+                                <th class="text-center"><i class="fa fa-cogs"></i> 平台</th>
+                                <th class="text-center"><i class="fa fa-cogs"></i> 推送路径</th>
+                                <th class="text-center"><i class="fa fa-cogs"></i>操作</th>
+                            </thead>
+                            <tbody>
+                                {% for num in gamelistdir %}
+                                    <tr class="text-center">
+                                        <td data-editable='false' name="group" value='{{num.platform}}'><input type="checkbox" data-toggle="checkbox" name="subcheck" value='{{num.platform}}'></td>
+                                        <td data-editable='false' name="area_name">{{num.area_name}}</td>
+                                        <td name="platform">{{num.platform}}</td>
+                                        <td name="dirname">{{num.dirname}}</td>
+                                        <td >
+                                            <a href=""><span style="color:#676A6C" class="glyphicon glyphicon-ok" onclick="alter('contents_form')"></span></a>
+                                            <a href="/inc/gamelist_dir_edit/?area={{area_name}}&platform={{ num.platform }}&action=delete"><span class="glyphicon glyphicon-trash" style="color:red" onclick="return confirm('确认删除吗？')"></span></a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+
+                        </table>
+
+
+                    <div class="hr-line-dashed"></div>
+                    <div class="pull-left">
+                        <h4>请选择需要推送的公告文件！<font style="color: red;;">【填写内容或者推送空文件】</font></h4>
+                    </div>
+                    <table class="table table-striped table-bordered table-hover">
+                            <thead>
+                                <th class="text-center"></th>
+                                <th class="text-center">公告文件名</th>
+                                <th class="text-center"><i class="fa fa-cogs"></i> 公告内容</th>
+                            </thead>
+                            <tbody>
+                                <tr class="text-center">
+                                    <td><input type="checkbox" data-toggle="checkbox" name="notice_file" value="maintain_announcement"></td>
+                                    <td>maintain_announcement.ini</td>
+                                    <td><textarea type="text" name="maintain_announcement" class="form-control" value="" placeholder="">{{ maintain_announcement }}</textarea></td>
+                                </tr>
+                                <tr class="text-center">
+                                    <td><input type="checkbox" data-toggle="checkbox" name="notice_file" value="maintain_content"></td>
+                                    <td>maintain_content.ini</td>
+                                    <td><textarea type="text" name="maintain_content" class="form-control" placeholder="">{{ maintain_content }}</textarea></td>
+                                </tr>
+                                <tr class="text-center">
+                                    <td><input type="checkbox" data-toggle="checkbox" name="notice_file" value="version_announcement"></td>
+                                    <td>version_announcement.ini</td>
+                                    <td><textarea type="text" name="version_announcement" class="form-control" placeholder="">{{ version_announcement }}</textarea></td>
+                                </tr>
+                            </tbody>
+                    </table>
+                    </form>
+                    <div class="hr-line-dashed"></div>
+                    <button type="submit" class="btn  btn-primary dim"  form="contents_form" formmethod="post" formaction="/inc/white_list_send/?area={{area_name}}" >推送到服务器</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $('#editable').editableTableWidget({editor: $('<textarea>')});
+    });
+
+
+    function alter(form) {
+        selectData = GetTableDataBox();
+        console.log(selectData[0])
+        if (selectData[1] != 0) {
+            $.ajax({
+                type: "get",
+                url: "/inc/gamelist_dir_edit/?area={{area_name}}&action=edit",
+                data: {"editable": selectData[0], "len_table": selectData[1]},
+                success: function (data) {
+                    alert("修改成功");
+                    window.open("/inc/gamelist_dir_edit/?area={{area_name}}", "_self");
+                error: window.open("/inc/gamelist_dir_edit/?area={{area_name}}", "_self");
+                }
+            });
+        }
+    }
+
+    function fnClickAddRow(){
+        var tr="<tr class='text-center'>\
+                  <td data-editable='false' name='group' value='new'><input type='checkbox' name='subcheck'/></td>\
+                  <td data-editable='false' name='area_name'>{{area_name}}</td>\
+                  <td name='platform'>请修改平台</td>\
+                  <td name='dirname'>请修改推送路径</td>\
+                  <td>点击以上图标保存</td>\
+                </tr>";
+　  　　$("#editable").append(tr);　　
+        $('#editable').editableTableWidget({editor: $('<textarea>')});
+    }
+</script>
+
+{% endblock %}

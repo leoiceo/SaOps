@@ -1,0 +1,193 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block page-content %}
+{% include 'nav_cat_bar.html' %}
+
+<div class="wrapper wrapper-content">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>数据库备份计划任务</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            <i class="fa fa-wrench"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-user">
+                            <li><a href="#">Config option 1</a>
+                            </li>
+                            <li><a href="#">Config option 2</a>
+                            </li>
+                        </ul>
+                        <a class="close-link">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="ibox-content">
+                    <div class="row">
+                        <div class="col-sm-2">
+
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-3">
+                        </div>
+                    </div>
+                            
+                    <div class="table-responsive">
+                        <table class="table table-hover table-bordered">
+                            <thead>
+                                    <th class="text-center">任务计划名称</th>
+                                    <th class="text-center">周期</th>
+                                    <th class="text-center">状态</th>
+                                    <th class="text-center">操作</th>
+                            </thead>
+                        <tbody>
+                            {% for num in menu %}
+                                <tr class="text-center">
+                                    <td>{{num.name}}</td>
+                                    <td>{{num.crontab}}</td>
+                                    {% ifequal num.enabled 1 %}
+                                            <td><font color="green">up</font></td>
+                                    {% else %}
+                                            <td><font color="red">down</font></td>
+                                    {% endifequal %}
+                                    <td>
+                                        <a href="/inc/backup_plan/?task_name={{num.name}}&action=disable" class="btn btn-xs btn-default"><i class=" icon-remove"></i> 禁用</a>
+                                        <a href="/inc/backup_plan/?task_name={{num.name}}&action=enable" class="btn btn-xs btn-info"><i class="icon-ok"></i> 启用</a>
+                                        <a href="/inc/backup_plan/?task_name={{num.name}}&action=delete" class="btn btn-xs btn-danger"><i class="icon-trash"></i> 删除</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="hr-line-dashed"></div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="portlet box green">
+                            <div class="portlet-body form">
+                            <div class="form-body">
+                                <form action="{% url 'inc_backup_plan' %}"  id="form_sample_2" class="form-horizontal">
+
+                                    <div class="form-group">
+                                        <label class="control-label col-md-3">计划任务名称<span class="red-fonts">*</span></label>
+                                        <div class="col-md-3">
+                                             <input type="text" name="plan_name" data-required="1" class="form-control"/>
+                                            <div id="editor2_error"></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="dept_id" class="control-label col-md-3">计划任务时间<span class="red-fonts">*</span></label>
+                                            <div class="col-sm-3 input-group">
+                                                <select id="dept_id" name="plan_time" class="form-control m-b">
+                                                    <option value="------">------</option>
+                                                    {% for nb in back_time %}
+                                                        <option value="{{nb.minute}} {{nb.hour}} {{nb.day_of_week}} {{nb.day_of_month}} {{nb.month_of_year}}">{{nb.minute}} {{nb.hour}} {{nb.day_of_week}} {{nb.day_of_month}} {{nb.month_of_year}} (分/时/星期/几号/几月)</option>
+                                                    {% endfor %}
+                                                </select>
+                                                <span class="input-group-btn">
+                                                    <button type="button" class="btn btn-primary"  data-toggle="modal" data-target="#add-date"><i class="fa fa-plus-square"></i></button>
+                                                </span>
+                                            </div>
+                                    </div>
+
+
+                                    <div class="form-actions fluid">
+                                        <div class="col-md-offset-3 col-md-9">
+                                        <button type="submit" class="btn btn-primary" name="action" value="add">添加备份任务</button>
+                                        <p>{{log}}</p>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="add-date" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="exampleModalLabel" align="center">添加crontab</h4>
+      </div>
+      <div class="modal-body">
+        <form id="project-form">
+          <div class="form-group">
+              <label class="col-sm-2 control-label">分钟<span class="red-fonts"></span></label>
+              <div class="col-sm-5">
+                  <input  name="minute" placeholder="*" type="text" class="form-control" >
+              </div>
+          </div>
+          <div class="hr-line-dashed"></div><br>
+          <div class="form-group">
+              <label class="col-sm-2 control-label">小时<span class="red-fonts"></span></label>
+              <div class="col-sm-5">
+                  <input  name="hour" placeholder="*" type="text" class="form-control" >
+              </div>
+          </div>
+          <div class="hr-line-dashed"></div><br>
+          <div class="form-group">
+              <label class="col-sm-2 control-label">日期<span class="red-fonts"></span></label>
+              <div class="col-sm-5">
+                  <input  name="date" placeholder="*" type="text" class="form-control" >
+              </div>
+          </div>
+          <div class="hr-line-dashed"></div><br>
+          <div class="form-group">
+              <label class="col-sm-2 control-label">月份<span class="red-fonts"></span></label>
+              <div class="col-sm-5">
+                  <input  name="month" placeholder="*" type="text" class="form-control" >
+              </div>
+          </div>
+
+            <div class="hr-line-dashed"></div><br>
+          <div class="form-group">
+              <label class="col-sm-2 control-label">周(星期)<span class="red-fonts"></span></label>
+              <div class="col-sm-5">
+                  <input  name="week" placeholder="*" type="text" class="form-control" >
+              </div>
+          </div>
+          <div class="hr-line-dashed"></div><br>
+
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+        <button type="submit" class="btn btn-primary" form="project-form" formmethod="post" formaction="/inc/backup_plan/">确定</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+//日期选择器
+$('#datetimepicker2').datetimepicker({
+                onGenerate:function( ct ){
+                $(this).find('.xdsoft_date.xdsoft_weekend')
+                //      .addClass('xdsoft_disabled');
+        },
+        weekends:['01.01.2014','02.01.2014','03.01.2014','04.01.2014','05.01.2014','06.01.2014'],
+        yearOffset:0,
+        lang:'ch',      //中文显示
+        timepicker:false,
+        format:'Y-m-d',         //格式年月日
+        formatDate:'Y-m-d',
+});
+</script>
+
+{%endblock%}

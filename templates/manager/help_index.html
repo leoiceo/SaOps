@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block page-content %}
+{% include 'nav_cat_bar.html' %}
+
+<div class="wrapper wrapper-content">
+    <div class="row">
+        <div class="col-lg-3">
+            <div class="ibox float-e-margins">
+                <div class="ibox-content mailbox-content">
+                    <div class="file-manager">
+                        <a class="btn btn-block btn-primary compose-mail" href="{% url 'new_article' %}">新建文档</a>
+                        <div class="space-25"></div>
+                        
+                        <h5>分类</h5>
+                        <ul class="category-list" style="padding: 0">
+                            <li>
+                                <a href="{% url 'help_index' %}?category=基础资源"> <i class="fa fa-circle text-navy"></i> 基础资源</a>
+                            </li>
+                            <li>
+                                <a href="{% url 'help_index' %}?category=权限管理"> <i class="fa fa-circle text-danger"></i> 权限管理</a>
+                            </li>
+                            <li>
+                                <a href="{% url 'help_index' %}?category=计划任务"> <i class="fa fa-circle text-primary"></i> 计划任务</a>
+                            </li>
+                            <li>
+                                <a href="{% url 'help_index' %}?category=脚本管理"> <i class="fa fa-circle text-info"></i> 脚本管理</a>
+                            </li>
+                            <li>
+                                <a href="{% url 'help_index' %}?category=批量任务"> <i class="fa fa-circle text-warning"></i> 批量任务</a>
+                            </li>
+                        </ul>
+
+                        <h5 class="tag-title">标签</h5>
+                        <ul class="tag-list" style="padding: 0">
+                            {% for num in tag_info %}
+                            <li><a href="{% url 'help_index' %}?tag={{ num.id }}" ><i class="fa fa-tag"></i> {{ num.name }}</a></li>
+                            {% endfor %}
+                        </ul>
+                        <div class="clearfix"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% block help-content %}
+        <div class="col-lg-9 animated fadeInRight">
+            <div class="mail-box-header">
+
+                <form method="get" action="" class="pull-right mail-search">
+                    <div class="input-group">
+                        <input type="text" class="form-control input-sm" name="search" placeholder="搜索标题、内容">
+                        <div class="input-group-btn">
+                            <button type="submit" class="btn btn-sm btn-primary">
+                                搜索
+                            </button>
+                        </div>
+                    </div>
+                </form>
+                <h2>
+        运维文档({{ Article_count }})
+    </h2>
+        <div class="mail-tools tooltip-demo m-t-md">
+            <div class="btn-group pull-right">
+                <button class="btn btn-white btn-sm"><i class="fa fa-arrow-left"></i>
+                </button>
+                <button class="btn btn-white btn-sm"><i class="fa fa-arrow-right"></i>
+                </button>
+
+            </div>
+            <button class="btn btn-white btn-sm" title="刷新" onclick="location.href=location.href;"><i class="fa fa-refresh"></i>刷新</button>
+            <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top" title="编辑"><i class="glyphicon glyphicon-pencil"></i> 编辑</button>
+            <button id="article-del" class="btn btn-white btn-sm" title="删除"><i class="fa fa-trash-o"></i> 删除</button>
+
+        </div>
+    </div>
+    <div class="mail-box">
+        {% if data_log %}
+            <div class="alert alert-success text-center">{{ data_log }}</div>
+        {% endif %}
+        {% if error_log %}
+            <div class="alert alert-danger text-center">{{ error_log }}</div>
+        {% endif %}
+        <form id="contents_form" name="contents_form" >
+        <table class="table table-hover">
+            <thead>
+                    <tr>
+                        <th class="i-checks"><input id="checkall" type="checkbox" class="i-checks" name="checkall" value="checkall" data-editable='false' onclick="check_all('contents_form')"></th>
+                        <th class="mail-ontact">创建人</th>
+                        <th class="mail-subject">标题</th>
+                        <th class="text-right mail-date">创建日期</th>
+                    </tr>
+            </thead>
+            <tbody>
+                {% for num in article_info %}
+                <tr class="unread">
+                    <td class="check-mail">
+                        <input type="checkbox" class="i-checks" name="article_id" value="{{ num.id }}">
+                    </td>
+                    <td class="mail-ontact"><a href="{% url 'help_detail' %}?id={{ num.id }}" >{{ num.create_user }}</a>
+                    </td>
+                    <td class="mail-subject"><a href="{% url 'help_detail' %}?id={{ num.id }}" >{{ num.name }}</a>
+                    </td>
+                    </td>
+                    <td class="text-right mail-date">{{ num.create_date|date:"Y-m-d H:i:s" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        </form>
+    </div>
+        </div>
+        {% endblock %}
+    </div>
+</div>
+<script>
+$(function () {
+    $("#article-del").click(function () {
+      var vals = new Array()
+      $('input[name="article_id"]:checked').each(function () {
+          vals.push($(this).val());
+      });
+      if(vals.length >=0){
+          $.ajax({
+              type: "POST",
+              url : "{% url 'help_index' %}",
+              data:{ids:JSON.stringify(vals)},
+              dataType:"json",
+              success:function (res) {
+
+                  //{status:true,msg:"del success"}
+                  if(res.status){
+                      location.href=location.href;
+
+                  }else{
+                      alert(res.msg);
+                  }
+              }
+          });
+      }
+    });
+});
+</script>
+{% endblock %}

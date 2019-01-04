@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block page-content %}
+{% include 'nav_cat_bar.html' %}
+
+<div class="wrapper wrapper-content">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>备份管理平台</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            <i class="fa fa-wrench"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-user">
+                            <li><a href="#">Config option 1</a>
+                            </li>
+                            <li><a href="#">Config option 2</a>
+                            </li>
+                        </ul>
+                        <a class="close-link">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="ibox-content">
+                    <div class="row">
+                    {% for k,v in inc_area_plat_info.items %}
+                    <div class="col-sm-1 m-b-xs">
+                        <div class="btn-group">
+                          <button data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="btn btn-primary dropdown-toggle">{{k}}<span class="caret"></span></button>
+                          <ul class="dropdown-menu dropdown-menu-right">
+                            {% for plat_name in v %}
+                              <li><a href="?project={{project}}&area={{k}}&platform={{plat_name}}">{{plat_name}}</a></li>
+                              <li class="divider"></li>
+                            {% endfor %}
+                          </ul>
+                        </div>
+                    </div>
+                    {% endfor %}
+
+                    <div class="col-xs-3 m-b-xs">
+                        <form id="nameform">
+                            <div class="input-group">
+                                <input type="text" name="date" class="input-sm form-control" placeholder="选择备份日期" id="datetimepicker2">
+                                <span class="input-group-btn">
+                                    <button type="submit" class="btn btn-sm btn-primary" form="nameform" formmethod="post" formaction="/inc/inc_backup/?area={{area_name}}&platform={{platform}}">备份日期查询</button>
+                                </span>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class=" pull-right">
+                        <a  class="btn btn-primary btn-write" href="{% url 'inc_backup_plan' %}"> 备份计划</a>
+                    </div>
+
+                    </div>
+
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <table class="table table-hover table-bordered">
+                                <thead>
+                                    <th class="text-center">地区</th>
+                                    <th class="text-center">平台</th>
+                                    <th class="text-center">日期</th>
+                                    <th class="text-center">数据库总数</th>
+                                    <th class="text-center">备份成功数</th>
+                                    <th class="text-center">备份失败数</th>
+                                </thead>
+                                <tbody>
+                                    <tr class="text-center">
+                                        <td>{{zone}}</td>
+                                        <td>{{platform}}</td>
+                                        <td>{{today}}</td>
+                                        <td style="color: darkred;">{{backup_all_count}}</td>
+                                        <td style="color: green">{{backup_done}}</td>
+                                        <td style="color:red">{{backup_failed}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+
+                    <div class="table-responsive">
+                        <table class="table table-hover table-bordered">
+                            <thead>
+                                <th class="text-center">编号</th>
+                                <th class="text-center">地区</th>
+                                <th class="text-center">平台</th>
+                                <th class="text-center">IP</th>
+                                <th class="text-center">区服</th>
+                                <th class="text-center">备份日期</th>
+                                <th class="text-center">备份时间</th>
+                                <th class="text-center">文件</th>
+                                <th class="text-center">文件大小</th>
+                                <th class="text-center">备份状态</th>
+                                <th class="text-center">备份log</th>
+                            </thead>
+                            <tbody>
+                            {% for num in menu %}
+                                <tr class="text-center">
+                                    <td>
+                                    {{forloop.counter}}
+                                    </td>
+                                    <td>{{num.area_name}}</td>
+                                    <td>{{num.platform}}</td>
+                                    <td>{{num.p_ip}}</td>
+                                    <td>{{num.server_name}}</td>
+                                    <td>{{num.bak_date|date:"Y-m-d"}}</td>
+                                    <td>{{num.bak_time|date:"H:i:s"}}</td>
+                                    {% ifequal num.platform "qq" %}
+                                            <td><a href="http://115.159.66.47:8080/db/{{num.bak_date|date:"Y-m-d"}}/{{num.server_name}}/{{num.filename}}" target="_blank">{{num.filename}}</a></td>
+                                    {% else %}
+                                            <td><a href="http://123.59.58.212:8080/db/{{num.bak_date|date:"Y-m-d"}}/{{num.server_name}}/{{num.filename}}" target="_blank">{{num.filename}}</a></td>
+                                    {% endifequal %}
+                                    <td>{{num.filesize}}</td>
+                                    {% ifequal num.status "ok" %}
+                                            <td><font color="green">{{num.status}}</font></td>
+                                    {% else %}
+                                            <td><font color="red">{{num.status}}</font></td>
+                                    {% endifequal %}
+                                    <td>{{num.log}}</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+//日期选择器
+$('#datetimepicker2').datetimepicker({
+                onGenerate:function( ct ){
+                $(this).find('.xdsoft_date.xdsoft_weekend')
+                //      .addClass('xdsoft_disabled');
+        },
+        weekends:['01.01.2014','02.01.2014','03.01.2014','04.01.2014','05.01.2014','06.01.2014'],
+        yearOffset:0,
+        lang:'ch',      //中文显示
+        timepicker:false,
+        format:'Y-m-d',         //格式年月日
+        formatDate:'Y-m-d',
+});
+</script>
+
+{%endblock%}

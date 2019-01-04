@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block page-content %}
+{% include 'nav_cat_bar.html' %}
+{% load mytags %}
+
+<div class="wrapper wrapper-content animated fadeIn tooltip-demo">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <button type="button" class="btn btn-primary btn-write btn-xs" data-toggle="tooltip" data-placement="right" title="">{{project}}-{{platform}}-SVN:{{ gversion }} 网站更新</button>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            <i class="fa fa-wrench"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-user">
+                            <li><a href="#">Config option 1</a>
+                            </li>
+                            <li><a href="#">Config option 2</a>
+                            </li>
+                        </ul>
+                        <a class="close-link">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <div class="row">
+
+                    </div>
+                    <div class="table-responsive">
+                        <form id="contents_form" name="contents_form">
+                            <table class="table table-hover table-bordered">
+                                <thead>
+                                  <tr class="">
+                                    <th class="text-center">全选<input id="checkall" type="checkbox" class="i-checks" name="checkall" value="checkall" data-editable='false' onclick="check_all('contents_form')"></th>
+                                    <th class="text-center">项目</th>
+                                    <th class="text-center">平台</th>
+                                    <th class="text-center">域名</th>
+                                    <th class="text-center">公网IP</th>
+                                    <th class="text-center">内网IP</th>
+                                    <th class="text-center">网站部署目录</th>
+                                    <th class="text-center">备注</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {% for num in web_info %}
+                                    <tr class="text-center">
+                                      <td>
+                                          {{forloop.counter}}.<input type="checkbox"  name="subcheck"  value={{num.p_ip}}+{{ num.s_ip }}+{{num.web_dir}}+{{num.id}}>
+                                      </td>
+                                      <td>{{num.project}}</td>
+                                      <td>{{num.platform}}</td>
+                                      <td>{{num.domain}}</td>
+                                      <td>{{num.p_ip}}</td>
+                                      <td>{{num.s_ip}}</td>
+                                      <td>{{num.web_dir}}</td>
+                                      <td>{{num.remark}}</td>
+                                    </tr>
+                                  {% endfor %}
+                                </tbody>
+                            </table>
+                            <div class="hr-line-dashed"></div>
+                            </form>
+                        <button type="button" class="btn btn-success dim" data-toggle="modal" data-target="#comfire_heat" data-whatever="@mdo" onclick="update_file()">网站更新</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" role="dialog" aria-labelledby="gridSystemModalLabel" id="comfire_heat">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="gridSystemModalLabel" align="center">{{platform}}-网站更新</h4>
+      </div>
+      <div class="modal-body">
+        <div class="container-fluid" align="center">
+            <font color="green"><p>请仔细检查更新的服务器信息是否正确,避免误操作...</p></font>
+            <font color="green"><p>当前更新的网站版本号为:{{ gversion }}</p></font>
+            <p>
+              {% for num in info_list %}
+                {{num}}<br>
+              {% endfor %}
+            </p>
+            <p>
+              {% for num in err_list %}
+                <font color="red">{{num}}<br></font>
+              {% endfor %}
+            </p>
+            <div class="hr-line-dashed"></div>
+            <p class="open_check_list"></p>
+
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button id="update-file-heat" type="submit" class="btn btn-success dim" form="contents_form" formmethod="post" formaction="{% url 'web_update_file_status' %}?project={{ project }}&area={{area_name}}&platform={{platform}}&gversion={{gversion}}&method=heat" >{{platform}}-网站更新</button>
+        <button type="button" class="btn btn-info dim" data-dismiss="modal">关闭</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+{%endblock%}

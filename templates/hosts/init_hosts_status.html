@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block page-content%}
+{% include 'nav_cat_bar.html' %}
+<script language="JavaScript">
+function myrefresh()
+{
+       window.location.reload();
+}
+setTimeout('myrefresh()',10000); //指定1秒刷新一次
+</script>
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-lg-13">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>服务器初始化过程</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            <i class="fa fa-wrench"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-user">
+                            <li><a href="#">未启用 1</a>
+                            </li>
+                            <li><a href="#">未启用 2</a>
+                            </li>
+                        </ul>
+                        <a class="close-link">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+            <div class="ibox-content">
+
+{{data}}
+<pre>
+{% for num in host_list %}
+        {% for k,v in num.items %}
+
+        {% ifequal k "info" %}
+            <p align="center">{{ v }}</p>
+        {% endifequal %}
+        {% ifequal k "host" %}
+<p align="center">--------------------------{{v}}服务器初始化日志----------------------</p>
+        {% endifequal %}
+        {% ifequal k "init_log" %}
+{{v}}<br>
+        {% endifequal %}
+        {% ifequal k "init_err_log" %}
+{{v}}<br>
+        {% endifequal %}
+        {% endfor %}
+
+{% endfor %}
+</pre>
+ </div>
+ </div>
+ </div>
+ </div>
+ </div>
+
+{%endblock%}

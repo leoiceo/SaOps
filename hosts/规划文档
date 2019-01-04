@@ -1,0 +1,30 @@
+主机
+    p_ip    公网地址
+    s_ip    内网地址
+    db_ip   数据库地址
+    port    端口
+    os_type 系统类型 （CentOS，Windows，Debian,Ubuntu）
+    project 所属项目 ---> 外键-->（项目名，简称）
+    use     用途  ---多对多 --> 用途
+    area    地区 ---> 地区类型 （地区名 简称）
+    idc     机房 -->  外键-->（机房，简称）
+    login_pass 登陆密码
+    commit  备注
+    game_count 游戏服数量
+    host_init 初始化状态
+    db_init   数据库初始化状态
+
+    p_ip = models.GenericIPAddressField(unique=True)
+    s_ip = models.GenericIPAddressField(blank=True,null=True)
+    db_ip = models.GenericIPAddressField(blank=True,null=True)
+    port = models.IntegerField(default=22)
+    os_type = models.CharField(max_length=32)
+    project = models.ForeignKey(Project,default=None,blank=True)
+    use = models.ManyToManyField(server_use)
+    area = models.ForeignKey(area_type)
+    idc = models.ForeignKey(idc_list)
+    login_passwd = models.CharField(max_length=255,null=True,blank=True)
+    commit = models.CharField(max_length=255,null=True,blank=True)
+    game_count = models.IntegerField(max_length=10,null=True,blank=True)
+    host_init = models.BooleanField(default=False)
+    db_init = models.BooleanField(default=False)

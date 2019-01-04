@@ -1,0 +1,30 @@
+.list-tree{
+    border-right: none;
+    border-bottom: none;
+    border-top: none;
+}
+
+.list-tree span {
+    margin-left: -15px;
+    color: lightgrey;
+}
+.borderless{
+    border:none;
+}
+
+.a-pointer{
+    cursor: pointer;
+}
+
+
+.pointer{
+    cursor: pointer;
+}
+
+.bold{
+    font-weight: bold;
+}
+
+.asset-info-table >tbody>tr>td{
+    padding-top: 10px;
+}

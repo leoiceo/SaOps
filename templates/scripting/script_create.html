@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block page-content %}
+{% include 'nav_cat_bar.html' %}
+
+<div class="wrapper wrapper-content">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>{{ header_title }}</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            <i class="fa fa-wrench"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-user">
+                            <li><a href="#">Config option 1</a>
+                            </li>
+                            <li><a href="#">Config option 2</a>
+                            </li>
+                        </ul>
+                        <a class="close-link">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="ibox-content">
+                  <form id="assetForm" method="post" class="form-horizontal">
+                        <div class="form-group"><label class="col-sm-2 control-label"> 脚本用途 <span class="red-fonts">*</span>: </label>
+                            <div class="col-sm-4">
+                                <input type="text" name="edit_script_use" class="form-control" value={{use_name}}>
+                            </div>
+                        </div>
+                        
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group"><label class="col-sm-2 control-label"> 脚本名称 <span class="red-fonts">*</span>: </label>
+                            <div class="col-sm-4">
+                                <input type="text" name="edit_script_name" class="form-control" value={{script_name}}>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group"><label class="col-sm-2 control-label"> 脚本类型 <span class="red-fonts">*</span>: </label>
+                            <div class="col-sm-8">
+                                {% ifequal script_type "py" %}
+                                  <input type="radio" value="py" name="script_type" checked="checked">.py
+                                  <input type="radio" value="sh" name="script_type" >.sh
+                                {% else %}
+                                  <input type="radio" value="py" name="script_type" >.py
+                                  <input type="radio" value="sh" name="script_type" checked="checked">.sh
+                                {% endifequal %}
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group arg-form">
+                            <label class="col-sm-2 control-label"> 输入参数 <span class="green-fonts"> </span>: </label>
+                            <div class="col-sm-4 args-outer hidden">
+                                <input type="text" name="input[]" placeholder="参数名" class="form-control args ">
+                            </div>
+                            <div class="col-sm-2 add-items-outer">
+                                <button style="margin-left: 0px;" type="button" id="add-items" class="form-group btn btn-hover btn-info" ng-click="addInput()" ng-disabled="storing"><i class="glyphicon glyphicon-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group"><label class="col-sm-2 control-label"> 脚本内容 <span class="red-fonts">*</span> </label>
+                            <div class="col-sm-9">
+<textarea id="code1" name="up_file">
+
+</textarea>
+                            </div>
+                        </div>
+
+                </form>
+                  <div class="hr-line-dashed"></div>
+                  <div align="center">
+                      <button type="submit" class="btn btn-success"  form="assetForm" formmethod="post" formaction="{% url 'script_edit' %}?project={{project}}&script_name={{script_name}}&action=new">提交</button>
+                      <a type="submit" class="btn btn-primary" href="{% url 'script_list' %}?project={{project}}" >返回</a>
+                  </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+     $(document).ready(function(){
+          var editor_one = CodeMirror.fromTextArea(document.getElementById("code1"), {
+             lineNumbers: true,
+             matchBrackets: true,
+             styleActiveLine: true,
+             theme:"ambiance"
+         });
+
+         var codeType = $('[name="script_type"]:checked').val();
+         if(codeType == 'py'){
+                editor_one.setValue('{{ env_python }}');
+
+         }else{
+                editor_one.setValue('{{ env_shell }}');
+         }
+
+         $('[name="script_type"]').change(function(){
+             var codeType = $(this).val();
+             if(codeType == 'py'){
+                editor_one.setValue('{{ env_python }}');
+             }else{
+                editor_one.setValue('{{ env_shell }}');
+             }
+         });
+
+
+    });
+
+    $("#add-items").click(function () {
+        if($(this).parent().prev().hasClass('hidden')){
+            return $(this).parent().prev().removeClass('hidden');
+        }
+        var removeBut = '<buttun style="margin-left: 15px;" class="btn btn-hover btn-default remove-arg"><i class="glyphicon glyphicon-remove"></i></buttun>';
+        var html      = '<div class="form-group arg-form">' + $(".arg-form:last").html() + removeBut + '</div>';
+        var num  = parseInt($(".args-num:last").text());
+        $(".arg-form:last").after(html);
+        $(".args:last").attr({"name":"input[]"});
+        $(".args-num:last").empty().text(num+1);
+        $(".remove-arg:last").siblings('.remove-arg').remove();
+        registerRemoveArg();
+        if($(".add-items-outer").length == 1)
+                return;
+        $(".add-items-outer:last").remove();
+    });
+
+    function registerRemoveArg()
+    {
+        $(".remove-arg:last").click(function(){
+            $(this).parent().fadeOut();
+        });
+    }
+</script>
+{%endblock%}

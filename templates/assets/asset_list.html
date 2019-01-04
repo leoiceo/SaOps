@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block page-content %}
+{% include 'nav_cat_bar.html' %}
+{% load custom_tag %}
+<link href="/static/css/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet">
+<link href="/static/css/plugins/dataTables/dataTables.responsive.css" rel="stylesheet">
+<link href="/static/css/plugins/dataTables/dataTables.tableTools.min.css" rel="stylesheet">
+
+<div class="wrapper wrapper-content animated fadeInRight">
+<div class="panel row">
+        <div class="ibox-title">
+            <h5>资产详细信息列表</h5>
+                <div class="ibox-tools">
+                    <a class="collapse-link">
+                        <i class="fa fa-chevron-up"></i>
+                    </a>
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                        <i class="fa fa-wrench"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-user">
+                        <li><a href="#">未启用 1</a>
+                            </li>
+                            <li><a href="#">未启用 2</a>
+                            </li>
+                        </ul>
+                        <a class="close-link">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+        </div>
+
+        <div class="panel-body table-responsive">
+            <form id="contents_form" name="contents_form">
+            <table id="asset_list" class="table table-striped table-bordered table-hover dataTables-example">
+                <thead >
+                    <tr>
+                        <th>资产ID</th>
+                        <th>资产类型</th>
+                        <th>IDC</th>
+                        <th>业务线</th>
+                        <th>操作系统</th>
+                        <th>CPU(核)</th>
+                        <th>内存(MB)</th>
+                        <th>硬盘总量(GB)</th>
+                        <th>公网地址</th>
+                        <th>状态</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for a in asset_info %}
+                    <tr class="text-center" >
+                        <td data-editable='false'><a href="/asset/asset_list/{{ a.id }}">{{ a.id }}</a></td>
+                        <td data-editable='false'>{{ a.get_asset_type_display }}</td>
+                        <td data-editable='false'>{{ a.idc }}</td>
+                        <td data-editable='false'>{{ a.project }}</td>
+                        <td data-editable='false'>{{ a.system_version }}</td>
+                        <td data-editable='false'>{{ a.cpu_total }}</td>
+                        <td data-editable='false'>{{ a.memory }}</td>
+                        <td data-editable='false'>
+                            {% if "{" in a.disk_info %}
+                                {{ a.disk_info|sum_disk }}
+                            {% else %}
+                                {{ a.disk_info}}
+                            {% endif %}
+                        </td>
+                        <td data-editable='false'>{{ a.p_ip }}</td>
+{#                        <td data-editable='false'>{{ a.get_status_display }}</td>#}
+                        <td data-editable='false'>
+                            {% if a.get_status_display == "已使用" %}
+                                <font class="green-fonts">{{ a.get_status_display }}</font>
+                            {% else %}
+                                <font class="red-fonts">{{ a.get_status_display }}</font>
+                            {% endif %}
+                        </td>
+                        <td data-editable='false'>
+                            <a href="{% url 'asset_update' %}?project={{ a.project.mini_name }}&update_host={{ a.p_ip }}" title="更新" class="btn btn-xs"><span class="glyphicon glyphicon-refresh"></span></a>
+                            <a href="/asset/asset_list/{{ a.id }}/" class="btn btn-xs" title="查看"><span class="glyphicon glyphicon-eye-open"></span></a>
+                            <a href="{% url 'asset_edit' %}?id={{ a.id }}" class="btn btn-xs" title="编辑"><span  class="glyphicon glyphicon-pencil"></span></a>
+                            <a href="{% url 'asset_list' %}?id={{ a.id }}&action=del" class="btn btn-xs" title="删除"><span class="glyphicon glyphicon-trash"  onclick="return confirm('确认删除吗？')"></span></a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+           </table>
+        </form>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="/static/js/plugins/dataTables/jquery.dataTables.js"></script>
+<script src="/static/js/plugins/dataTables/dataTables.bootstrap.js"></script>
+<script src="/static/js/plugins/dataTables/dataTables.responsive.js"></script>
+<script src="/static/js/plugins/dataTables/dataTables.tableTools.min.js"></script>
+
+<script type="text/javascript"type="text/javascript">
+    $(document).ready(function(){
+        $('#editable').editableTableWidget({editor: $('<textarea>')});
+    });
+    $(document).ready(function() {
+        $('.dataTables-example').dataTable({
+            responsive: true,
+            "dom": 'T<"clear">lfrtip',
+            "iDisplayLength":50,
+            "tableTools": {
+                "aButtons":["copy","xls",'print'],
+                "sSwfPath": "/static/js/plugins/dataTables/swf/copy_csv_xls_pdf.swf"
+            }
+        });
+   });
+</script>
+{% endblock %}

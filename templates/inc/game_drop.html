@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block page-content %}
+{% include 'nav_cat_bar.html' %}
+{% load mytags %}
+
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>删除游戏服日志</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            <i class="fa fa-wrench"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-user">
+                            <li><a href="#">未启用 1</a>
+                            </li>
+                            <li><a href="#">未启用 2</a>
+                            </li>
+                        </ul>
+                        <a class="close-link">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="ibox-content">
+                    <div class="row">
+                        {% if runinfo %}
+                        <div class="alert alert-danger text-center">{{ runinfo }}游戏服正在运行中,请先关闭游戏</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="table-responsive">
+                        <div id="txtHint">
+                        <table class="table table-hover table-bordered">
+                        <thead>
+                            <tr>
+                                <th class="text-center">地区</th>
+                                <th class="text-center">平台</th>
+                                <th class="text-center">服务器ip</th>
+                                <th class="text-center">数据库ip</th>
+                                <th class="text-center">服务器名</th>
+                                <th class="text-center">执行状态</th>
+                                <th class="text-center">log</th>
+                                <th class="text-center">执行时间</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for num in menu %}
+                                <tr class="text-center">
+                                    <td>{{num.area_name}}</td>
+                                    <td>{{num.platform}}</td>
+                                    <td>{{num.p_ip}}</td>
+                                    <td>{{num.db_ip}}</td>
+                                    <td>{{num.server_name}}</td>
+                                    <td >
+                                        <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width: {{num.status}}">{{num.status}}</div>
+                                    </td>
+                                    <td>{{num.log}}</td>
+                                    <td>{{num.delete_time|print_time}}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                        </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+function loadXMLDoc()
+{
+var xmlhttp;
+if (window.XMLHttpRequest)
+        {
+        xmlhttp=new XMLHttpRequest();
+        }
+else
+        {
+        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+        }
+xmlhttp.onreadystatechange=function()
+        {
+        if (xmlhttp.readyState==4 && xmlhttp.status==200)
+                {
+                document.getElementById("txtHint").innerHTML=xmlhttp.responseText;
+                }
+        }
+xmlhttp.open("GET","/inc/gamedrop_process/?project={{ project }}&area={{ area_name }}&platform={{ platform }}&runinfo={{ runinfo }}&delete_time={{ delete_time }}&action=1",true);
+xmlhttp.send()
+}
+</script>
+<br>
+<br>
+<SCRIPT LANGUAGE="JavaScript">
+function CountDown()
+{
+        loadXMLDoc();
+}
+ timer = setInterval("CountDown()",2000);
+</SCRIPT>
+
+{%endblock%}

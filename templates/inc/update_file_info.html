@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block page-content %}
+{% include 'nav_cat_bar.html' %}
+{% load mytags %}
+
+<div class="wrapper wrapper-content animated fadeIn tooltip-demo">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>{{area_name}}-{{platform}}-SVN:{{ gversion }} 游戏服更新</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            <i class="fa fa-wrench"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-user">
+                            <li><a href="#">Config option 1</a>
+                            </li>
+                            <li><a href="#">Config option 2</a>
+                            </li>
+                        </ul>
+                        <a class="close-link">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <div class="row">
+                        <div class="col-sm-4 m-b-xs">
+                            <a  class="btn btn-primary btn-write" href="?game_type=正式服&platform={{platform}}&area={{area_name}}&gversion={{gversion}}"> 正式服</a>
+                            <a  class="btn btn-primary btn-write" href="?game_type=测试服&platform={{platform}}&area={{area_name}}&gversion={{gversion}}"> 测试服</a>
+                            <a  class="btn btn-primary btn-write" href="?game_type=提审服&platform={{platform}}&area={{area_name}}&gversion={{gversion}}"> 提审服</a>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <form id="contents_form" name="contents_form">
+                            <table class="table table-hover table-bordered">
+                                <thead>
+                                  <tr class="">
+                                    <th class="text-center"><input id="checkall" type="checkbox" class="i-checks" name="checkall" value="checkall" data-editable='false' onclick="check_all('contents_form')"></th>
+                                    <th class="text-center">地区</th>
+                                    <th class="text-center">平台</th>
+                                    <th class="text-center">区服名称</th>
+                                    <th class="text-center">服务器IP</th>
+                                    <th class="text-center">游戏服目录</th>
+                                    <th class="text-center">服务器用途</th>
+                                    <th class="text-center">游戏服ID</th>
+                                    <th class="text-center">上一次状态监控时间</th>
+                                    <th class="text-center">区服状态</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {% for num in game_info %}
+                                    <tr class="text-center">
+                                      <td>
+                                          {{forloop.counter}}.<input type="checkbox"  name="subcheck"  value={{num.p_ip}}+{{num.app_dir}}+{{num.server_id}}>
+                                      </td>
+                                      <td>{{num.area.area_name}}</td>
+                                      <td>{{num.platform.mini_name}}</td>
+                                      <td>{{num.server_name}}</td>
+                                      <td>{{num.p_ip}}</td>
+                                      <td>{{num.app_dir}}</td>
+                                      <td>{{num.use.use_name}}</td>
+                                      <td>{{num.server_id}}</td>
+                                      {% ifequal num.check_time|date:"Y-m-d H:i:s"|status_diff 1 %}
+                                        <td><font color="green">{{num.check_time|date:"Y-m-d H:i:s"}}</font></td>
+                                      {% else %}
+                                        <td><font color="red">{{num.check_time|date:"Y-m-d H:i:s"}}</font></td>
+                                      {% endifequal %}
+                                      {% ifequal num.status  1 %}
+                                        <td><font color="green">开启</font></td>
+                                      {% else %}
+                                        <td><font color="red">关闭</font></td>
+                                      {% endifequal %}
+                                    </tr>
+                                  {% endfor %}
+                                </tbody>
+                            </table>
+                            <div class="hr-line-dashed"></div>
+                            </form>
+                        <button type="button" class="btn btn-success dim" data-toggle="modal" data-target="#comfire_heat" data-whatever="@mdo" onclick="game_open()">服务端文件热更新</button>
+                        <button type="button" class="btn btn-success dim" data-toggle="modal" data-target="#comfire_cold" data-whatever="@mdo" onclick="game_close()">服务端文件停服更新</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" role="dialog" aria-labelledby="gridSystemModalLabel" id="comfire_heat">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="gridSystemModalLabel" align="center">{{platform}}-服务端文件热更新</h4>
+      </div>
+      <div class="modal-body">
+        <div class="container-fluid" align="center">
+            <font color="green"><p>请仔细检查更新的服务器信息是否正确,避免误操作...</p></font>
+            <font color="green"><p>当前更新的服务端版本号为:</p></font>
+            <p>
+              {% for num in info_list %}
+                {{num}}<br>
+              {% endfor %}
+            </p>
+            <p>
+              {% for num in err_list %}
+                <font color="red">{{num}}<br></font>
+              {% endfor %}
+            </p>
+            <div class="hr-line-dashed"></div>
+            <p id="open_list"></p>
+
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-success dim" form="contents_form" formmethod="post" formaction="/inc/update_file_status/?area={{area_name}}&gversion={{gversion}}&method=heat&platform={{platform}}" >{{platform}}-服务端文件热更新</button>
+        <button type="button" class="btn btn-info dim" data-dismiss="modal">关闭</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+
+<div class="modal fade" role="dialog" aria-labelledby="gridSystemModalLabel" id="comfire_cold">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="gridSystemModalLabel" align="center">{{platform}}-服务端文件停服更新</h4>
+      </div>
+      <div class="modal-body">
+        <div class="container-fluid" align="center">
+            <font color="green"><p>请仔细检查更新的服务器信息是否正确,避免误操作...</p></font>
+            <font color="green"><p>当前更新的服务端版本号为:</p></font>
+
+            <p>
+              {% for num in info_list %}
+                {{num}}<br>
+              {% endfor %}
+            </p>
+            <p>
+              {% for num in err_list %}
+                <font color="red">{{num}}<br></font>
+              {% endfor %}
+            </p>
+            <font color="red"><p>停服更新会移走游戏服log文件夹里面的文件</p></font>
+            <font color="red"><p>确定选择的游戏服已关闭</p></font>
+            <div class="hr-line-dashed"></div>
+            <p id="close_list"></p>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+          <button type="submit" class="btn btn-success dim" form="contents_form" formmethod="post" formaction="/inc/update_file_status/?area={{area_name}}&gversion={{gversion}}&method=cold&platform={{platform}}" >{{platform}}-服务端文件停服更新</button>
+
+        <button type="button" class="btn btn-info dim" data-dismiss="modal">关闭</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+
+
+{%endblock%}

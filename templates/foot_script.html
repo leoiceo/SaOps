@@ -1,0 +1,102 @@
+<!-- Mainly scripts -->
+
+<script src="/static/js/plugins/metisMenu/jquery.metisMenu.js"></script>
+
+<script src="/static/js/jquery.bootstrap-duallistbox.js"></script>
+
+<script src="/static/js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+
+<script src="/static/js/plugins/sparkline/jquery.sparkline.min.js"></script>
+
+<script src="/static/js/bootstrap-dialog.js"></script>
+
+<script src="/static/js/mindmup-editabletable.js"></script>
+
+<script src="/static/js/plugins/fullcalendar/moment.min.js"></script>
+
+<script src="/static/js/plugins/fullcalendar/fullcalendar.min.js"></script>
+
+
+
+<!-- Custom and plugin javascript -->
+
+<script src="/static/js/inspinia.js"></script>
+
+<script src="/static/js/plugins/pace/pace.min.js"></script>
+
+
+
+<script src="/static/js/plugins/codemirror/codemirror.js"></script>
+
+<script src="/static/js/plugins/codemirror/mode/javascript/javascript.js"></script>
+
+
+
+<!-- Peity -->
+
+<script src="/static/js/plugins/peity/jquery.peity.min.js"></script>
+
+<script src="/static/js/plugins/jsTree/jstree.min.js"></script>
+
+<script src="/static/js/plugins/staps/jquery.steps.min.js"></script>
+
+<!-- Peity -->
+
+<script src="/static/js/demo/peity-demo.js"></script>
+
+
+
+<script src="/static/js/base.js"></script>
+
+
+
+<!-- pop windows layer-->
+
+<script src="/static/js/layer/layer.min.js"></script>
+
+<!-- highcharts -->
+
+<script src="/static/js/highcharts/highcharts.js"></script>
+<script src="/static/js/highcharts/exporting.js"></script>
+<script src="/static/js/highcharts/exporting-excel.js"></script>
+<script src="/static/js/dropzone/dropzone.js"></script>
+<!-- active menu -->
+
+<script>
+
+    var url_array = document.location.pathname.split("/");
+
+    s1 = url_array[1];
+
+    s2 = url_array[2];
+
+    s3 = url_array[3];
+
+    if (s1 == ''){
+
+        $('#index').addClass('active')
+
+    } else {
+
+        $("#"+s1).addClass('active');
+
+        $('#'+s1+' .'+s2).addClass('active');
+
+        $("." + s1 + "_" +s2 + "").parent().parent().addClass('active');
+    }
+
+
+</script>
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?d84445de725f677eb39866ed06b567c1";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+

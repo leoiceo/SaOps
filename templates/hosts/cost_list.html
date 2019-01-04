@@ -1,0 +1,259 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block page-content %}
+{% include 'nav_cat_bar.html' %}
+{% load bootstrap %}
+<link href="/static/css/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet">
+<link href="/static/css/plugins/dataTables/dataTables.responsive.css" rel="stylesheet">
+<link href="/static/css/plugins/dataTables/dataTables.tableTools.min.css" rel="stylesheet">
+
+<div class="wrapper wrapper-content">
+    <div class="row">
+        <div id="idc_cost" class="col-lg-6" style="height:400px"></div>
+        <div id="pro_cost" class="col-lg-6" style="height:400px"></div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>费用信息</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            <i class="fa fa-wrench"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-user">
+                            <li><a href="#">未启用 1</a>
+                            </li>
+                            <li><a href="#">未启用 2</a>
+                            </li>
+                        </ul>
+                        <a class="close-link">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="ibox-content">
+                    <div class="row">
+                      <div class="col-sm-4 m-b-xs">
+                          <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#idc_add"><i class="icon-cogs"></i>增加</button>
+                      </div>
+                    </div>
+                    {% if error %}
+                        <div class="alert alert-warning text-center">{{ error }}</div>
+                    {% endif %}
+                    {% if msg %}
+                        <div class="alert alert-success text-center">{{ msg }}</div>
+                    {% endif %}
+                    <table class="table table-striped table-bordered table-hover dataTables-example">
+                          <thead>
+                            <th class="text-center">项目</th>
+                            <th class="text-center">云服务类型</th>
+                            <th class="text-center">IDC</th>
+                            <th class="text-center">CPU</th>
+                            <th class="text-center">内存</th>
+                            <th class="text-center">磁盘</th>
+                            <th class="text-center">带宽</th>
+                            <th class="text-center">按量计费</th>
+                            <th class="text-center">开始时间</th>
+                            <th class="text-center">状态</th>
+                            <th class="text-center">单价</th>
+                            <th class="text-center">数量</th>
+                            <th class="text-center">操作</th>
+                          </thead>
+                          <tbody>
+                            {% for num in cost_info %}
+                              <tr class="text-center">
+                                <td>{{num.project.name}}</td>
+                                <td>{{num.get_cost_type_display}}</td>
+                                <td>{{num.idc.idc_name}}</td>
+                                <td>{{num.cpu}}核</td>
+                                <td>{{num.mem}}GB</td>
+                                <td>{{num.disk}}GB</td>
+                                <td>{{num.bandwidth}}MB</td>
+                                {% if num.network_bill == 1 %}
+                                    <td>是</td>
+                                {% else %}
+                                    <td>否</td>
+                                {% endif %}
+                                <td>{{num.start_date|date:"Y-m-d H:i:s"}}</td>
+                                <td>{{num.get_status_display}}</td>
+                                <td>{{num.price}}</td>
+                                <td>{{num.total}}</td>
+                                <td>
+                                    <a href="{% url 'cost_list' %}?id={{num.id}}&action=plus"><span class="glyphicon glyphicon-plus"></span></a>
+                                    &nbsp;
+                                    <a href="{% url 'cost_list' %}?id={{num.id}}&action=minus"><span style="color:red" class="glyphicon glyphicon-minus"></span></a>
+                                    &nbsp;
+                                    <a href="{% url 'cost_edit' %}?id={{num.id}}"><span class="glyphicon glyphicon-pencil"></span></a>
+                                    &nbsp;&nbsp;
+                                    <a href="{% url 'cost_list' %}?id={{num.id}}&action=delete"><span style="color:red" class="glyphicon glyphicon-trash" onclick="return confirm('确认删除吗？')"></span></a>
+                                </td>
+                              </tr>
+                            {% endfor %}
+                          </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="idc_add" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="exampleModalLabel" align="center">添加费用信息</h4>
+      </div>
+        <div class="modal-body">
+            <form id="CostMangerForm" method="post" class="form-horizontal">
+                {{ af.project|bootstrap_horizontal }}
+                {{ af.cost_type|bootstrap_horizontal }}
+                {{ af.idc|bootstrap_horizontal }}
+                {{ af.cpu|bootstrap_horizontal }}
+                {{ af.mem|bootstrap_horizontal }}
+                {{ af.disk|bootstrap_horizontal }}
+                {{ af.bandwidth|bootstrap_horizontal }}
+                {{ af.network_bill|bootstrap_horizontal }}
+                {{ af.price|bootstrap_horizontal }}
+                {{ af.status|bootstrap_horizontal }}
+                {{ af.total|bootstrap_horizontal }}
+            </form>
+        </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+        <button type="submit" class="btn btn-primary" form="CostMangerForm" formmethod="post" formaction="{% url 'cost_list' %}" name="action" value="add">确定</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="/static/js/plugins/dataTables/jquery.dataTables.js"></script>
+<script src="/static/js/plugins/dataTables/dataTables.bootstrap.js"></script>
+<script src="/static/js/plugins/dataTables/dataTables.responsive.js"></script>
+<script src="/static/js/plugins/dataTables/dataTables.tableTools.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+            $('.dataTables-example').dataTable({
+                responsive: true,
+                "dom": 'T<"clear">lfrtip',
+                "iDisplayLength":10,
+                "tableTools": {
+                    "aButtons":["copy","xls",'print'],
+                    "sSwfPath": "/static/js/plugins/dataTables/swf/copy_csv_xls_pdf.swf"
+                }
+            });
+        });
+
+</script>
+
+<script>
+$(function() {
+    Highcharts.setOptions({
+        timezoneOffset: -8
+    });
+
+    $.getJSON("{% url 'cost_idc_api' %}", function(json) {
+        $('#idc_cost').highcharts({
+            chart: {
+                type: 'line'
+            },
+            title: {
+                text: '云服务器新增消费曲线'
+            },
+            subtitle: {
+                text: json.subtitle
+            },
+            xAxis: {
+                categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+            },
+            yAxis: {
+                title: {
+                    text: '月度新增消费'
+                }
+            },
+            plotOptions: {
+                line: {
+                    dataLabels: {
+                        enabled: true
+                    },
+                    enableMouseTracking: false
+                }
+            },
+            series: json.data,
+        });
+    });
+});
+</script>
+
+<script>
+$(function() {
+    Highcharts.setOptions({
+        timezoneOffset: -8
+    });
+
+    $.getJSON("{% url 'cost_pro_api' %}", function(json) {
+        $('#pro_cost').highcharts({
+        chart: {
+            type: 'column'
+        },
+        title: {
+            text: '项目月费用柱状图'
+        },
+        subtitle: {
+            text: json.subtitle
+        },
+        xAxis: {
+           // categories: [{% for p in spro_info %} '{{ p }}', {% endfor %}],
+            categories: json.project,
+            title: {
+                text: null
+            }
+        },
+        yAxis: {
+            min: 0,
+            title: {
+                text: '',
+                align: 'high'
+            },
+            labels: {
+                overflow: 'justify'
+            }
+        },
+        tooltip: {
+            valueSuffix: 'RMB'
+        },
+        plotOptions: {
+            bar: {
+                dataLabels: {
+                    enabled: true
+                }
+            }
+        },
+        legend: {
+            layout: 'vertical',
+            align: 'right',
+            verticalAlign: 'top',
+            x: -40,
+            y: 100,
+            floating: true,
+            borderWidth: 1,
+            backgroundColor: ((Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF'),
+            shadow: true
+        },
+        credits: {
+            enabled: false
+        },
+        series: json.data
+        });
+    });
+});
+</script>
+
+{%endblock%}

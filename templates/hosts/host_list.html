@@ -1,0 +1,276 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% load pagination_tags %}
+{% block page-content %}
+{% include 'nav_cat_bar.html' %}
+
+<link href="/static/css/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet">
+<link href="/static/css/plugins/dataTables/dataTables.responsive.css" rel="stylesheet">
+<link href="/static/css/plugins/dataTables/dataTables.tableTools.min.css" rel="stylesheet">
+<style>
+    .parent-pagination .pagination
+    {
+        margin: 0px;
+    }
+</style>
+
+<script type="text/javascript">
+  function del_server(){
+        var opendata=new Array();
+        var show=document.getElementsByName('ip_list');
+        
+        for(var i=0;i<show.length;i++){
+            if(show[i].checked==true){
+            opendata[i]=show[i].value+'<br>';
+        }
+    }
+  for(var i=0;i<opendata.length;i++){
+                if(opendata[i] == "" || typeof(opendata[i]) == "undefined")
+                {
+                        opendata.splice(i,1);
+                        i = i-1;
+                }
+        }
+        document.getElementById("open_list").innerHTML=opendata;
+}
+
+</script>
+
+<div class="wrapper wrapper-content">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>{% if area %} {{ area }}-主机详细信息列表{% else %}默认-主机详细信息列表{% endif %}</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            <i class="fa fa-wrench"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-user">
+                            <li><a href="#">未启用 1</a>
+                            </li>
+                            <li><a href="#">未启用 2</a>
+                            </li>
+                        </ul>
+                        <a class="close-link">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="ibox-content">
+
+
+                    <div class="row">
+
+                        {% if file_name %}
+                            <div class="alert alert-success alert-dismissable">
+                                 <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                                {% if smg %}
+                                 <strong>Nice! {{ smg }}</strong> <a href="{% url 'host_excel_download' %}?filename={{ file_name }}" target="_blank" class="alert-link">下载：{{ file_name }}</a>
+                                {% else %}
+                                 <strong>Error!</strong>  {{ error }}
+                                {% endif %}
+                            </div>
+                        {% endif %}
+
+                        {% if info %}
+                            <div class="alert alert-success text-center">{{ info }}</div>
+                        {% endif %}
+                        {% if error %}
+                            <div class="alert alert-danger text-center">{{ error }}</div>
+                        {% endif %}
+
+{#                        <div class="col-sm-9 m-b-xs">#}
+{#                            {% for pro in pro_info %}#}
+{#                                <a type="button" class="btn btn-primary btn-sm" href="{% url 'host_list' %}?project={{pro.mini_name}}">{{pro.name}}</a>#}
+{#                            {% endfor %}#}
+{#                        </div>#}
+                        <form id="pro_form">
+                            <div class="form-group col-sm-2 ">
+                                <select class="form-control" name="project" onchange="change_info()">
+                                    <option value="all">全部项目</option>
+                                    {% for num in pro_info %}
+                                        {% ifequal num.mini_name project %}
+                                            <option value="{{num.mini_name}}" selected>{{ num.name }}</option>
+                                        {% else %}
+                                            <option value="{{num.mini_name}}">{{ num.name }}</option>
+                                        {% endifequal %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </form>
+
+                        <div class="form-group mail-search pull-right col-sm-3">
+                            <form id="checkform">
+                                <div class="input-group">
+                                    <input type="text" name="search_name" id="search_input" class="form-control input-sm">
+                                    <input type="hidden" name="project"  value="{{ project }}" class="form-control input-sm">
+                                    <div class="input-group-btn">
+                                        <button type="submit" form="checkform" formmethod="POST"  class="btn btn-sm btn-primary ">-搜索-</button>
+                                        <a type="button" href="{% url 'host_export_excel' %}?project={{ project }}" name="export"  class="btn btn-sm btn-success ">-导出-</a>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+
+                    </div>
+
+                    <div class="table-responsive" style="overflow-x: hidden">
+                        <form id="contents_form" name="contents_form">
+                            <table class="table table-hover table-bordered dataTables-example" id="editable" name="editable">
+                            <thead>
+                                <tr>
+                                  <th class="text-center">编号</th>
+                                  <th class="text-center">项目</th>
+                                  <th class="text-center">地区</th>
+                                  <th class="text-center">机房</th>
+                                  <th class="text-center">平台</th>
+                                  <th class="text-center">系统</th>
+                                  <th class="text-center">公网IP</th>
+                                  <th class="text-center">内网IP</th>
+                                  <th class="text-center">SSH 端口</th>
+                                  <th class="text-center">用途</th>
+                                  <th class="text-center">数据库</th>
+                                  <th class="text-center">初始密码</th>
+                                  <th class="text-center">开服数量</th>
+                                  <th class="text-center">备注</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% autopaginate host_info %}
+                                {% for num in host_info %}
+                                    <tr class="gradeX text-center">
+                                        <td class="text-center" name="p_old_ip" value="{{ num.p_ip }}" data-editable='false'>{{forloop.counter}}.<input name="ip_list" value="{{ num.p_ip }}" type="checkbox" class="i-checks"></td>
+                                        <td name="project" data-editable='false'>{{num.project.mini_name}}</td>
+                                        <td name="area" data-editable='false'>{{num.area}}</td>
+                                        <td name="idc" data-editable='false'>{{num.idc.mini_name}}</td>
+                                        <td name="platform" >{{num.platform.mini_name}}</td>
+                                        <td name="os_type" data-editable='false'>{{num.os_type}}</td>
+                                        <td name="p_ip">{{num.p_ip}}</td>
+                                        <td name="s_ip">{{num.s_ip}}</td>
+                                        <td name="port">{{num.port}}</td>
+                                        <td name="use" data-editable='false'>{% for use in num.use.all %} {{use}}{% endfor %}</td>
+                                        <td name="db_ip">{{num.db_ip}}</td>
+                                        {% ifequal user.is_admin 1 %}
+                                        <td name="login_pass">{{num.login_pass}}</td>
+                                        {% else %}
+                                        <td name="login_pass">管理可见</td>
+                                        {%endifequal%}
+                                        <td data-editable='false'>{{num.game_count}}</td>
+                                        <td name="commit">{{num.commit}}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                            </table>
+                        </form>
+
+                        <div class="row parent-pagination" style="padding: 0px 18px;">
+                            <div class="pull-left">
+                                <input id="checkall" type="checkbox" class="i-checks" name="checkall" value="checkall" data-editable='false' onclick="check_all('contents_form')">全选/全不选
+                            </div>
+                            {% paginate %}
+                        </div>
+
+                        <br>
+                        <a target="_blank" href="{% url 'host_add' %}"  class="btn btn-sm btn-primary "> 添加 </a>
+                        <input type="button" class="btn btn-danger btn-sm"  data-toggle="modal" data-target="#del-server" data-whatever="@mdo" onclick="del_server()" value="删除">
+                        <input type="button" id="alter_button" class="btn btn-warning btn-sm" name="alter_button" value="修改" onclick="alter('contents_form')" />
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" role="dialog" aria-labelledby="gridSystemModalLabel" id="del-server">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="gridSystemModalLabel" align="center">删除服务器,若想彻底删除，请进入回收资源管理</h4>
+      </div>
+      <div class="modal-body">
+        <div class="container-fluid" align="center">
+        <p id="open_list"></p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-success" name="switch" value="del" form="contents_form" formmethod="post" formaction="{% url 'host_list' %}">确定</button>
+        <button type="button" class="btn btn-info" data-dismiss="modal">关闭</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<script src="/static/js/plugins/dataTables/jquery.dataTables.js"></script>
+<script src="/static/js/plugins/dataTables/dataTables.bootstrap.js"></script>
+<script src="/static/js/plugins/dataTables/dataTables.responsive.js"></script>
+<script src="/static/js/plugins/dataTables/dataTables.tableTools.min.js"></script>
+
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('#editable').editableTableWidget({editor: $('<textarea>')});
+    });
+
+
+    function alter(form) {
+        selectData = GetHostTable();
+        //console.log(selectData[0])
+        if (selectData[1] != 0) {
+            $.ajax({
+                type: "POST",
+                url: "{% url 'host_edit' %}",
+                data: {"editable": selectData[0], "len_table": selectData[1]},
+                success: function (data) {
+                    alert("修改成功");
+                    window.open("{% url 'host_list' %}?project={{ project }}", "_self");
+                error: window.open("{% url 'host_list' %}?project={{ project }}", "_self");
+                }
+            });
+        }
+    }
+
+    $("#search_input").keydown(function(e){
+        var t = $("#search_input");
+        if(e.keyCode==13){
+            if (t.val() == "") {
+                alert('输入不能为空');
+                t.focus();
+                return false;
+            }
+            }
+    });
+
+
+    $(document).ready(function() {
+            $('.dataTables-example').dataTable({
+                responsive: true,
+                "dom": 'T<"clear">lfrtip',
+                //"iDisplayLength":25,
+                "bPaginate": false,
+                "info": false,
+                "searching": false,
+                "tableTools": {
+                    "aButtons":'',
+                //    "sSwfPath": "/static/js/plugins/dataTables/swf/copy_csv_xls_pdf.swf"
+                }
+
+            });
+        });
+
+    function change_info(){
+        var args = $("#pro_form").serialize();
+
+        window.location = "{% url 'host_list' %}?" + args
+    }
+
+</script>
+
+
+{%endblock%}

@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block page-content %}
+{% include 'nav_cat_bar.html' %}
+
+<div class="wrapper wrapper-content animated fadeInRight">
+        <div class="row">
+            <div class="col-lg-10">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>修改发行商信息</h5>
+                        <div class="ibox-tools">
+                            <a class="collapse-link">
+                                <i class="fa fa-chevron-up"></i>
+                            </a>
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                <i class="fa fa-wrench"></i>
+                            </a>
+                            <ul class="dropdown-menu dropdown-user">
+                                <li><a href="#">未启用 1</a>
+                                </li>
+                                <li><a href="#">未启用 2</a>
+                                </li>
+                            </ul>
+                            <a class="close-link">
+                                <i class="fa fa-times"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="ibox-content">
+                        {% for plat in platform_info %}
+                        <form method="post" id="platForm" class="form-horizontal" action="">
+                            {% if info %}
+                                <div class="alert alert-success text-center">{{ info }}</div>
+                            {% endif %}
+                            <div class="form-group">
+                                <label for="plat_name" class="col-sm-2 control-label">平台名称<span class="red-fonts">*</span></label>
+                                <div class="col-sm-8">
+                                    <input id="plat_name" name="plat_name" placeholder="平台名称" type="text" class="form-control" value="{{plat.plat_name}}" >
+                                    <input id="plat_id" name="plat_id" style="display:none;" type="text" class="form-control" value="{{plat.id}}" >
+                                </div>
+                            </div>
+                            <div class="hr-line-dashed"></div>
+                            <div class="form-group">
+                                <label for="name" class="col-sm-2 control-label">简称<span class="red-fonts">*</span></label>
+                                <div class="col-sm-8">
+                                    <input id="plat_mini" name="plat_mini" placeholder="简称" type="text" class="form-control" value="{{plat.mini_name}}" >
+                                </div>
+                            </div>
+                            <div class="hr-line-dashed"></div>
+                            <div class="form-group">
+                                <div class="col-sm-4 col-sm-offset-2">
+                                <button id="submit_button"  class="btn btn-primary" type="submit">确认保存</button>
+                                </div>
+                            </div>
+                        </form>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+$('#platForm').validator({
+    timely: 2,
+    theme: "yellow_right_effect",
+    rules: {
+        check_ip: [/^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])(\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])){3}$/, 'ip地址不正确'],
+        check_port: [/^\d{1,5}$/, '端口号不正确'],
+        type_m: function(element){
+                    return  $("#M").is(":checked");
+            }
+    },
+        "plat_name": {
+            rule: "required",
+            tip: "部门名称",
+            ok: "",
+            msg: {required: "必须填写"}
+        },
+        "plat_mini": {
+            rule: "required",
+            tip: "备注",
+            ok: "",
+            msg: {required: "必须填写"}
+        },
+    },
+    valid: function(form) {
+        form.submit();
+    }
+});
+
+</script>
+{% endblock %}

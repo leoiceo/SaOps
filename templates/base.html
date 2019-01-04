@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+
+<html>
+
+
+
+<head>
+
+
+
+    <meta charset="utf-8">
+
+    <!--<meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1, user-scalable=no">
+
+
+    <title>CMDB|OPS运维管理平台</title>
+
+
+
+    <link rel="shortcut icon" href="/static/img/ipad_splus_icon-logo.png" type="image/x-icon">
+
+    {% include 'link_css.html' %}
+
+    {% include 'head_script.html' %}
+
+
+
+
+
+
+
+</head>
+
+
+
+<body>
+
+
+
+
+
+    <div id="wrapper">
+
+        {% include 'nav.html' %}
+
+        <div id="page-wrapper" class="gray-bg">
+
+            <div class="row border-bottom">
+
+                {% include 'nav_bar_header.html' %}
+
+            </div>
+
+            {% block page-content %}{% endblock %}
+
+            {% include 'footer.html' %}
+
+        </div>
+
+    </div>
+
+
+
+</body>
+
+     {% include 'foot_script.html' %}
+
+</html>
+
+
+
