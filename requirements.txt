@@ -58,7 +58,7 @@ openapi-codec==1.3.2
 oss2==2.4.0
 paramiko==2.4.0
 passlib==1.7.1
-Pillow==4.3.0
+Pillow==8.1.1
 psutil==5.4.1
 pyasn1==0.4.2
 pycparser==2.18
