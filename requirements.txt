@@ -71,7 +71,7 @@ python-engineio==2.0.1
 python-gssapi==0.6.4
 python-socketio==1.8.3
 pytz==2017.3
-PyYAML==3.12
+PyYAML==5.4
 redis==2.10.6
 requests==2.18.4
 s3transfer==0.1.13
