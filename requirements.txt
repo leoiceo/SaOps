@@ -80,7 +80,7 @@ six==1.11.0
 sshpubkeys==2.2.0
 tornado==4.5.2
 uritemplate==3.0.0
-urllib3==1.22
+urllib3==1.26.5
 vine==1.1.4
 wcwidth==0.1.7
 Werkzeug==0.12.2
